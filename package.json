@@ -1,0 +1,12 @@
+{
+  "name": "clubs-card-game",
+  "version": "0.9.0",
+  "description": "Clubs - a 4-player trick-avoidance card game (Milestone 9: rules dialog, sound effects). Plain HTML, CSS and JavaScript.",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve .",
+    "test": "node --test tests/*.test.js",
+    "build:single": "node tools/build-single-file.js"
+  },
+  "license": "UNLICENSED"
+}
