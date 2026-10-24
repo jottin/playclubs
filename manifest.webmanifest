@@ -1,0 +1,16 @@
+{
+  "name": "Clubs",
+  "short_name": "Clubs",
+  "description": "A trick-taking card game where clubs decide the score. You against three computer players.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#030f09",
+  "theme_color": "#030f09",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
