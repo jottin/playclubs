@@ -10,14 +10,14 @@
 
   /* Scorecards */
   --score-w: clamp(108px, 29vw, 160px);
-  --score-h: 76px;
+  --score-h: 80px;
   --edge: 20px;                                   /* gap between scorecards and board edge */
 
   /* Card widths. Board cards must fit between the scorecards; hand cards are finger-sized. */
   --bw: clamp(32px, min((var(--app-w) / 2 - var(--score-w) - 14px) / 1.45, 9.2vh - 8px), 90px);
   --hw: clamp(46px, min(19vw, (25vh - 74px) / 1.4), 100px);
-  --slot-dx: calc(var(--bw) * 1.05);               /* west / east card offset from centre */
-  --slot-dy: calc(var(--bw) * var(--ratio) * 0.95);/* north / dealer card offset from centre */
+  --slot-dx: calc(var(--bw) * 0.65);               /* west / east card offset from centre */
+  --slot-dy: calc(var(--bw) * var(--ratio) * 0.45);/* north / dealer card offset from centre */
 
   /* Palette */
   --felt-hi: #178c4e;
@@ -251,7 +251,7 @@ button { font: inherit; color: inherit; }
 .scorecard {
   position: absolute;
   width: var(--score-w);
-  padding: 9px 7px 9px 12px;
+  padding: 7px 9px;
   border: 2px solid transparent;
   border-radius: 14px;
   color: #fff;
@@ -406,10 +406,10 @@ button { font: inherit; color: inherit; }
   will-change: transform;
   pointer-events: none;
 }
-.board-card[data-seat="west"]   { left: calc(50% - var(--slot-dx)); }
-.board-card[data-seat="east"]   { left: calc(50% + var(--slot-dx)); }
-.board-card[data-seat="north"]  { top: calc(50% - var(--slot-dy)); }
-.board-card[data-seat="dealer"] { top: calc(50% + var(--slot-dy)); }
+.board-card[data-seat="west"]   { left: calc(50% - var(--slot-dx)); rotate: -4deg; }
+.board-card[data-seat="east"]   { left: calc(50% + var(--slot-dx)); rotate: 4deg; }
+.board-card[data-seat="north"]  { top: calc(50% - var(--slot-dy)); rotate: -3deg; }
+.board-card[data-seat="dealer"] { top: calc(50% + var(--slot-dy)); rotate: 3deg; }
 
 /* ---------- Dialogs ---------- */
 
@@ -431,9 +431,9 @@ button { font: inherit; color: inherit; }
 .layer.full { position: fixed; z-index: 100; background: rgba(4, 8, 6, 0.88); overflow: auto; }
 
 .dialog {
-  width: min(94%, 420px);
+  width: min(100%, 420px);
   max-height: 100%;
-  padding: 18px 20px 20px;
+  padding: 18px 8px 20px;
   text-align: center;
   background: var(--panel);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -443,7 +443,7 @@ button { font: inherit; color: inherit; }
   transition: transform 0.22s ease;
 }
 .layer.show .dialog { transform: none; }
-.dialog.wide { width: min(94vw, 560px); max-height: 94dvh; overflow: auto; }
+.dialog.wide { /*width: min(94vw, 560px); max-height: 94dvh;*/ overflow: auto; }
 
 .dialog h3 { margin: 0 0 6px; font-size: 21px; font-weight: 700; line-height: 1.25; }
 .dialog p { margin: 0 0 16px; font-size: 15px; line-height: 1.45; color: rgba(255, 255, 255, 0.72); }
@@ -476,17 +476,17 @@ button { font: inherit; color: inherit; }
 .score-table td { padding: 12px 6px 4px; text-align: right; border-top: 1px solid rgba(255, 255, 255, 0.08); }
 .score-table th:first-child, .score-table td:first-child, .score-table:has(.winner) th:nth-of-type(2) { text-align: left; }
 .score-table:has(.winner) th { border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px; }
-.score-table:has(.winner) tr:first-of-type td { border: none; padding-top: 8px; padding-bottom: 10px; }
+.score-table:has(.winner) tr.winner td { border: none; padding-top: 8px; padding-bottom: 10px; }
 .score-table .who { text-align: left; font-weight: 600; }
 .score-table .total { font-weight: 700; font-size: 17px; color: #fff; }
 .score-table tr.winner td {background: rgba(251, 191, 36, 0.12);}
-.score-table tr.winner td:first-child { border-radius: 50px 0 0 50px; }
-.score-table tr.winner td:last-child { border-radius: 0 50px 50px 0; }
-.score-table tr th:first-child, .score-table tr td:first-child { padding-left: 1em; }
-.score-table tr th:last-child, .score-table tr td:last-child { padding-right: 1em; }
+.score-table tr.winner td:first-child { border-radius: 5px 0 0 5px; }
+.score-table tr.winner td:last-child { border-radius: 0 5px 5px 0; }
+.score-table tr th:first-child, .score-table tr td:first-child { padding-left: .5em; }
+.score-table tr th:last-child, .score-table tr td:last-child { padding-right: .5em; }
 .score-table td.exact, .score-table td.bonus, .score-table td.safe { color: var(--good); }
 .score-table td.over, .score-table td.miss { color: var(--bad); }
-.place { display: inline-block; min-width: 2.6em; font-weight: 700; color: rgba(255, 255, 255, 0.78); }
+.place { display: inline-block; font-size: .8em; font-weight: 700; color: rgba(255, 255, 255, 0.78); }
 .winner .place { color: #fbbf24; }
 
 /* ---------- Tooltip (3 seconds, then gone) ---------- */
@@ -525,14 +525,12 @@ button { font: inherit; color: inherit; }
 
 @media (max-height: 520px) {
   :root {
-    --score-h: 50px;
+    --score-h: 70px !important;
     --edge: 6px;
     --bw: clamp(30px, min((var(--app-w) / 2 - var(--score-w) - 14px) / 1.45, 7.65vh), 50px);
     --hw: clamp(40px, (25vh - 54px) / 1.4, 100px); /* hand area is 25% of the height */
-    --slot-dx: calc(var(--bw) * 1.1);
-    --slot-dy: calc(var(--bw) * var(--ratio) * 0.55);
   }
-  .scorecard { padding: 5px 6px 5px 10px; border-radius: 10px; }
+  .scorecard { border-radius: 10px; }
   .scorecard .name { font-size: 12px; margin-bottom: 1px; }
   .scorecard p { font-size: 10.5px; line-height: 1.3; }
   /*#table { inset: calc(var(--score-h) + 8px) calc(var(--score-w) + 12px); }*/
@@ -560,7 +558,7 @@ button { font: inherit; color: inherit; }
    (three of the four players; never the player with no zone) */
 .scorecard .zone-badge {
   position: absolute;
-  top: -12px;
+  top: -10px;
   right: 0;
   width: 26px;
   height: 28px;
@@ -574,7 +572,7 @@ button { font: inherit; color: inherit; }
 .scorecard[data-zone="1"] .zone-badge,
 .scorecard[data-zone="2"] .zone-badge { opacity: 1; transform: none; }
 @media (max-height: 520px) {
-  .scorecard .zone-badge { top: -8px; right: -8px; width: 22px; height: 24px; }
+  .scorecard .zone-badge { top: -8px; width: 22px; height: 24px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -622,7 +620,8 @@ button { font: inherit; color: inherit; }
 @media (max-width: 500px) {
   #settings-btn span {
       display: none;
-  }  
+  }
+  :root { --score-h: 100px; }  
 }
 
 #settings-dialog { text-align: left; }
@@ -716,8 +715,8 @@ button { font: inherit; color: inherit; }
   #settings-btn span { font-size: 13px; }
   .setting { padding: 5px 4px; }
   .setting-hint { display: none; }
-  #settings-dialog { padding: 8px 16px 10px; }
-  #settings-dialog .sheet-title { margin-bottom: 0; font-size: 17px; }
+  /*#settings-dialog { padding: 8px 16px 10px; }*/
+  /*#settings-dialog .sheet-title { margin-bottom: 0; font-size: 17px; }*/
   .setting-stack { gap: 2px; }
   .level-slider { height: 28px; }
   .setting-value, #set-level-name { font-size: 17px; }
@@ -791,7 +790,7 @@ button { font: inherit; color: inherit; }
 
 @media (max-height: 520px) {
   #rules-btn { bottom: 6px; right: 6px; width: 26px; height: 26px; font-size: 13px; }
-  #rules-dialog .sheet-title { padding: 8px 16px 6px; font-size: 17px; }
+  /*#rules-dialog .sheet-title { padding: 8px 16px 6px; font-size: 17px; }*/
   #rules-body { padding: 2px 16px 8px; }
   #rules-body p, #rules-body li { font-size: 13px; line-height: 1.4; margin-bottom: 6px; }
   #rules-body h4 { margin-top: 12px; font-size: 14px; }
