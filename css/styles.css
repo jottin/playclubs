@@ -1,8 +1,10 @@
 /* ==========================================================================
-   CLUBS - styles
-   Layout: board (75%) over hand area (25%). Everything sizes from the CSS
-   variables below, so phone / tablet / desktop only differ in a few numbers.
-   ========================================================================== */
+   CLUBS Game Styles:
+   Layout board (75%) over hand area (25%),
+   Sizes and color variables listed below,
+   Seamless felt texture embedded as svg,
+   (Made with Claude, Sonnet 5.5)
+========================================================================== */
 
 :root {
   --app-w: min(100vw, 1180px);
@@ -47,7 +49,7 @@ html, body {
 }
 
 body {
-  font-family: ui-rounded, "SF Pro Rounded", "Google Sans", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
   user-select: none;
@@ -161,12 +163,12 @@ button { font: inherit; color: inherit; }
   border-radius: 999px;
   display: block;
   position: absolute;
-  top: 30%;
+  top: 25%;
   right: 0;
   bottom: 0;
   left: 25%;
   border: 2px dashed rgba(255, 255, 255, 0.15);
-  height: 40%;
+  height: 50%;
   width: 50%;
   scale: 1.25;
 }
@@ -199,6 +201,13 @@ button { font: inherit; color: inherit; }
   width: calc(var(--bw) * 1.5);
   height: calc(var(--bw) * 1.5);
   fill: rgba(4, 28, 16, 0.55);
+}
+
+@media (max-width: 768px) {
+  #table:before {
+    top: 24% !important;
+    height: 52% !important;
+  }
 }
 
 /* ---------- Bid picker (centre of the table while the dealer bids) ---------- */
@@ -478,7 +487,7 @@ button { font: inherit; color: inherit; }
 .score-table:has(.winner) th { border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px; }
 .score-table:has(.winner) tr.winner td { border: none; padding-top: 8px; padding-bottom: 10px; }
 .score-table .who { text-align: left; font-weight: 600; }
-.score-table .total { font-weight: 700; font-size: 17px; color: #fff; }
+.score-table .total { font-weight: 700; color: #fff; }
 .score-table tr.winner td {background: rgba(251, 191, 36, 0.12);}
 .score-table tr.winner td:first-child { border-radius: 5px 0 0 5px; }
 .score-table tr.winner td:last-child { border-radius: 0 5px 5px 0; }
@@ -486,7 +495,7 @@ button { font: inherit; color: inherit; }
 .score-table tr th:last-child, .score-table tr td:last-child { padding-right: .5em; }
 .score-table td.exact, .score-table td.bonus, .score-table td.safe { color: var(--good); }
 .score-table td.over, .score-table td.miss { color: var(--bad); }
-.place { display: inline-block; font-size: .8em; font-weight: 700; color: rgba(255, 255, 255, 0.78); }
+.place { display: inline-block; font-size: .85em; font-weight: 700; color: rgba(255, 255, 255, 0.78); }
 .winner .place { color: #fbbf24; }
 
 /* ---------- Tooltip (3 seconds, then gone) ---------- */
@@ -641,9 +650,9 @@ button { font: inherit; color: inherit; }
 .setting-text { display: flex; flex-direction: column; gap: 2px; }
 .setting-hint { font-size: 13px; color: var(--muted); }
 .setting-value, #set-level-name { font-size: 20px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
-.setting-note { min-height: 0; margin: 0 0 12px; font-size: 13px; color: #fbbf24; text-align: left; }
-.setting-note:empty { display: none; }
-.setting-note.is-strong { font-weight: 700; }
+.setting-note { font-size: 13px; font-weight: 700; min-height: 0; margin: .5em 0 1.5em; padding: 0 .5em; opacity: 1; transition: all .2s ease; text-align: center; }
+.setting-note:empty { opacity: 0; }
+.setting-note.is-strong { color: #fbbf24; }
 
 /* On/off toggle */
 .switch {
