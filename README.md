@@ -21,7 +21,7 @@ npm run build:single   # writes dist/clubs.html, one self-contained file
 index.html        page structure + SVG suit icons
 css/styles.css    all styling; layout sizes come from the variables at the top
 js/rules.js       pure rules: deck, dealing, follow-suit, book winner, zone rotation, scoring, rankings
-js/settings.js    player settings (book confirmation, difficulty) saved in localStorage
+js/settings.js    player settings (book confirmation, sound, Hard Mode) saved in localStorage
 js/sound.js       sound effects made live with Web Audio (no audio files)
 js/ai.js          opponent card choice (plays toward the safe zone it was issued)
 js/engine.js      game state machine (rounds, safe zones, books, leaders). No DOM.
@@ -56,7 +56,7 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
    zone, North 0-2, East 3-4, Dealer 5-6), so over four rounds every player holds each zone once and sits one
    round out with no zone. Zones show on every scorecard ("Zone 3-4 - Won: 1"). Only the four-player game is defined
    so far (`zonesForRound` in `rules.js`); 3 and 5 players are still to be decided.
-5. **Scoring (Milestone 6).** Every club you win is worth 10 points. Everyone starts the game on 100 points; the highest
+5. **Scoring.** Every club you win is worth 10 points. Everyone starts the game on 100 points; the highest
    total after the last round wins (4 rounds, or 8 with Hard Mode, see Settings). Rewards grow as the zone gets harder to hit:
    - Zone **0-2**: finish with no clubs **+20**, or with 1 or 2 clubs **+10**.
    - Zone **3-4**: finish with 3 or 4 clubs **+30**.
@@ -102,8 +102,8 @@ Close with the button, Esc or a tap outside. Values are saved in localStorage (`
 
 - **Book Confirmation** (on/off switch): off skips the dialog after each book; the cards just pause, then slide to the winner.
 - **Hard Mode** (on/off switch, off by default) sets how well the computer players play and how long a game is (`LEVELS` in `rules.js`).
-  Off = **Medium**: 4 rounds (1 game); the computer plays toward its own safe zone using the odds (the opponent of milestones 1-9).
-  On = **Hard**: 8 rounds (2 games); the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
+  Off = **Medium**: 4 rounds (one cycle, every player leads once); the computer plays toward its own safe zone using the odds (the opponent of milestones 1-9).
+  On = **Hard**: 8 rounds (two cycles); the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
   cards 60 random ways, plays the round out and keeps the card with the best average score. About 20 points a game better than Medium
   in self-play. The old Easy level (random mistakes) and the 12-round game were removed; `mistakes` is still supported by the engine.
   Zones and leaders keep rotating every round. Games longer than 4 rounds show one column per 4-round game (G1, G2) on the final scoreboard.
@@ -157,4 +157,13 @@ folder or a copy of it). The viewport meta, safe-area insets and touch handling 
 
 ## Felt texture (9)
 
-The green felt used to be an SVG noise filter, which each browser draws differently (Safari and Firefox gave a coarse "maze" grain). It is now a pre-rendered tile, `img/felt.jpg` (1x) and `img/felt@2x.jpg` (2x), so every browser shows the same felt. `tools/build-single-file.js` inlines it into `dist/clubs.html`.
+The green felt is a hand-drawn SVG background in `css/styles.css` (plain shapes, no SVG filters), so Chrome, Safari and Firefox all draw
+exactly the same felt. An earlier version used an SVG noise filter, which each browser rendered differently, and then a pre-rendered
+`img/felt.jpg` tile. To change the felt, edit the SVG in the stylesheet.
+
+## Going live (9)
+
+The game is hosted on GitHub Pages at https://playclubs.net (custom domain, HTTPS). Home-screen and offline support: `manifest.webmanifest`,
+the icons in `icons/`, `favicon.svg`, and `sw.js`, a small network-first service worker registered by `js/pwa.js` (https and localhost only).
+Bump the cache name in `sw.js` to force players onto new files. Link previews use `og-image.png` (1200x630). Opening `index.html` straight from
+disk works for play, but the browser console will complain that it cannot load the manifest from `file://`; that is harmless.
