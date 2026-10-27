@@ -1,4 +1,4 @@
-# Clubs (playclubs.net) - Milestone 9
+# Clubs (playclubs.net) - Version 1, Milestone 9
 
 Clubs is a trick-taking card game in which club cards decide the score. In a game where you face off against 3 opponents, all 4 players fight to win points. Points can be won or lost through each round as players hit or miss their safe zones. End the round inside your zone to win points—miss it, and every club costs you!
 
@@ -57,7 +57,7 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
    round out with no zone. Zones show on every scorecard ("Zone 3-4 - Won: 1"). Only the four-player game is defined
    so far (`zonesForRound` in `rules.js`); 3 and 5 players are still to be decided.
 5. **Scoring (Milestone 6).** Every club you win is worth 10 points. Everyone starts the game on 100 points; the highest
-   total after the last round wins (4, 8 or 12 rounds, see Settings). Rewards grow as the zone gets harder to hit:
+   total after the last round wins (4 rounds, or 8 with Hard Mode, see Settings). Rewards grow as the zone gets harder to hit:
    - Zone **0-2**: finish with no clubs **+20**, or with 1 or 2 clubs **+10**.
    - Zone **3-4**: finish with 3 or 4 clubs **+30**.
    - Zone **5-6**: finish with 5 or 6 clubs **+50**. (M9: 7 clubs now misses the zone and costs 70.)
@@ -101,14 +101,18 @@ The "Settings" button (top-right of the board, `#settings-btn`) opens a dialog (
 Close with the button, Esc or a tap outside. Values are saved in localStorage (`js/settings.js`) when the browser allows it.
 
 - **Book Confirmation** (on/off switch): off skips the dialog after each book; the cards just pause, then slide to the winner.
-- **Difficulty Level** (slider, snaps to 1-3) sets how well the computer players play, and the number of rounds (`LEVELS` in `rules.js`):
-  **Easy** plays a random legal card 25% of the time; **Medium** plays toward its own safe zone using the odds (the opponent of
-  milestones 1-9); **Hard** looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen cards 60 random ways,
-  plays the round out and keeps the card with the best average score. Against three Medium players over a 4-round game the
-  dealer seat averaged 69 points on Easy, 77 on Medium and 90 on Hard (500 games each), winning 22%, 25% and 32% of games.
-- **Number of Rounds** follows the level: Easy 4 (1 game), Medium 8 (2 games), Hard 12 (3 games). Zones and leaders keep rotating
-  every round. A change made mid-game affects the computer players at once, but the round count applies from the next game.
-  Games longer than 4 rounds show one column per 4-round game (G1, G2, G3) on the final scoreboard.
+- **Hard Mode** (on/off switch, off by default) sets how well the computer players play and how long a game is (`LEVELS` in `rules.js`).
+  Off = **Medium**: 4 rounds (1 game); the computer plays toward its own safe zone using the odds (the opponent of milestones 1-9).
+  On = **Hard**: 8 rounds (2 games); the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
+  cards 60 random ways, plays the round out and keeps the card with the best average score. About 20 points a game better than Medium
+  in self-play. The old Easy level (random mistakes) and the 12-round game were removed; `mistakes` is still supported by the engine.
+  Zones and leaders keep rotating every round. Games longer than 4 rounds show one column per 4-round game (G1, G2) on the final scoreboard.
+  - Turning Hard Mode **on** shows a bold note ("Enabling Hard Mode will restart the game. Press the close button to continue.") and the
+    game restarts when the dialog closes (the page reloads; the setting is saved first), at Round 1 of 8. Switching it on and back off
+    before closing does nothing.
+  - Turning it **off** mid-game applies to the computer players at once, but the game in progress keeps its 8 rounds (a note says so);
+    the 4-round length starts with the next game.
+  - Settings saved by older builds (slider levels 1-3) are migrated: Hard (3) becomes Hard Mode on; Easy and Medium become off.
 
 ## Rules dialog (9)
 
@@ -150,3 +154,7 @@ tie for first about 11%, about 36% of players finish above 100, and each seat wi
 
 Wrap with Capacitor (`npm i @capacitor/core @capacitor/cli`, `npx cap init`, point `webDir` at this
 folder or a copy of it). The viewport meta, safe-area insets and touch handling are already in place.
+
+## Felt texture (9)
+
+The green felt used to be an SVG noise filter, which each browser draws differently (Safari and Firefox gave a coarse "maze" grain). It is now a pre-rendered tile, `img/felt.jpg` (1x) and `img/felt@2x.jpg` (2x), so every browser shows the same felt. `tools/build-single-file.js` inlines it into `dist/clubs.html`.
