@@ -40,19 +40,22 @@
   const BOOKS_PER_ROUND = CARDS_PER_PLAYER;
   const ROUNDS = 4; // every player leads one round (and holds each zone once); this is one "game"
 
-  // Difficulty levels (Settings). Each level is 1, 2 or 3 full games of ROUNDS rounds, and sets how well the computer plays.
-  //   Easy    mistakes: 25% of the time a computer player plays a random legal card instead of its best one.
-  //   Medium  mistakes: 0. Plays toward its own safe zone using the odds (this is the computer player of milestones 1-9).
-  //   Hard    search: 60. Looks ahead: for every legal card it deals the unseen cards 60 random ways, plays the round out,
-  //           and picks the card that scores best on average. About 20 points a game better than Medium in self-play.
+  // Difficulty levels. The Settings dialog has one switch, Hard Mode: off = Medium, on = Hard.
+  //   Medium  1 game (4 rounds). Plays toward its own safe zone using the odds (the computer player of milestones 1-9).
+  //   Hard    2 games (8 rounds). search: 60. Looks ahead: for every legal card it deals the unseen cards 60 random ways,
+  //           plays the round out, and picks the card that scores best on average. About 20 points a game better than Medium.
+  // (`mistakes` is the chance a computer player plays a random legal card; the old Easy level used 0.25. No level uses it now,
+  // but the engine and simulators still support it.)
   const LEVELS = [
-    { id: 1, label: 'Easy', games: 1, rounds: ROUNDS, mistakes: 0.25, search: 0 },
-    { id: 2, label: 'Medium', games: 2, rounds: ROUNDS * 2, mistakes: 0, search: 0 },
-    { id: 3, label: 'Hard', games: 3, rounds: ROUNDS * 3, mistakes: 0, search: 60 },
+    { id: 1, label: 'Medium', games: 1, rounds: ROUNDS, mistakes: 0, search: 0 },
+    { id: 2, label: 'Hard', games: 2, rounds: ROUNDS * 2, mistakes: 0, search: 60 },
   ];
   const DEFAULT_LEVEL = 1;
   function levelInfo(id) {
     return LEVELS.find((l) => l.id === id) || LEVELS[DEFAULT_LEVEL - 1];
+  }
+  function levelFor(hardMode) {
+    return hardMode ? LEVELS[1] : LEVELS[0];
   }
 
   function makeCard(suit, rank) {
@@ -238,7 +241,7 @@
 
   return {
     SUITS, SEATS, SEAT_NAME, SEAT_TITLE, setPlayerNames, resetPlayerNames, CARDS_PER_PLAYER, BOOKS_PER_ROUND, ROUNDS,
-    LEVELS, DEFAULT_LEVEL, levelInfo,
+    LEVELS, DEFAULT_LEVEL, levelInfo, levelFor,
     makeCard, createDeck, shuffle, deal, nextSeat, rightOf, leaderForRound,
     legalCards, resolveBook, describeBook, scoreZone, zoneUtility, scoreRound, rankPlayers,
     CLUB_POINTS, START_POINTS, ZONES, NO_ZONE_LABEL, zoneOf, zoneLabel, zoneReward, zonesForRound,

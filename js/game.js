@@ -196,7 +196,7 @@
   function finalScoreboardData() {
     const s = game.state;
     const ranked = R.rankPlayers(s.gamePoints);
-    // Up to 4 rounds: one column per round. Longer games (8 or 12 rounds) show one column per 4-round game.
+    // Up to 4 rounds: one column per round. Longer games (8 rounds, Hard Mode) show one column per 4-round game.
     const grouped = s.history.length > R.ROUNDS;
     const cols = grouped ? s.history.length / R.ROUNDS : s.history.length;
     const columns = [];
@@ -226,7 +226,7 @@
   }
 
   async function runGame() {
-    game = E.createGame({ rng: rng, level: Settings.get().level }); // rounds follow the level: 4, 8 or 12
+    game = E.createGame({ rng: rng, level: Settings.get().level }); // rounds follow the level: 4 (Medium) or 8 (Hard Mode)
     R.setPlayerNames(N.pickNames(R.SEATS, rng)); // four new hurricane names every game; SEATS[0] is the human
     UI.setNames();
     window.__clubs = { game: game }; // for debugging / automated tests
@@ -248,12 +248,15 @@
   }
 
   UI.init({ onHandClick: onHandClick });
-  // Difficulty applies to the computer players right away; the round count waits for the next game.
+  // Turning Hard Mode on restarts the game (see ui.js). Turning it off applies to the computer players right away,
+  // but the game in progress keeps its 8 rounds; 4 rounds starts with the next game.
   Settings.onChange((v) => { if (game) game.setLevel(v.level); });
-  UI.settingsNote = (lv) =>
-    game && game.state.totalRounds !== lv.rounds
-      ? 'This game stays at ' + game.state.totalRounds + ' rounds. ' + lv.rounds + ' rounds starts with the next game.'
+  UI.settingsNote = (v) => {
+    const rounds = R.levelFor(v.hardMode).rounds;
+    return game && game.state.totalRounds !== rounds
+      ? 'This game stays at ' + game.state.totalRounds + ' rounds. ' + rounds + ' rounds starts with the next game.'
       : '';
+  };
   UI.setStatus({ lead: 'Dealing\u2026' });
   runGame().catch((err) => {
     console.error(err);

@@ -58,7 +58,7 @@
   /* ---------- Settings and Rules dialogs ---------- */
 
   // Opens from a button; the game pauses (UI.sleep waits) while it is open. Returns { open, close }.
-  function wireDialog(layerSel, openSel, closeSel, onOpen) {
+  function wireDialog(layerSel, openSel, closeSel, onOpen, onClose) {
     const layer = $(layerSel);
     const btn = $(openSel);
     const closeBtn = $(closeSel);
@@ -77,6 +77,7 @@
       release = null;
       pauseGate = null;
       btn.focus({ preventScroll: true });
+      if (onClose) onClose();
     }
     btn.addEventListener('click', open);
     closeBtn.addEventListener('click', close);
@@ -89,7 +90,9 @@
     const S = window.ClubsSettings;
     const confirmSw = $('#set-confirm');
     const soundSw = $('#set-sound');
-    const slider = $('#set-level');
+    const hardSw = $('#set-hard');
+    const note = $('#set-note');
+    let hardAtOpen = false; // Hard Mode as it was when the dialog opened
 
     function renderSwitch(sw, on) {
       sw.setAttribute('aria-checked', String(on));
@@ -97,18 +100,24 @@
     }
     function render() {
       const v = S.get();
-      const lv = R.levelInfo(v.level);
       renderSwitch(confirmSw, v.confirmBooks);
       renderSwitch(soundSw, v.sound);
-      slider.value = String(v.level);
-      slider.setAttribute('aria-valuetext', lv.label);
-      slider.style.setProperty('--fill', ((v.level - 1) / (R.LEVELS.length - 1)) * 100 + '%');
-      $('#set-level-name').textContent = lv.label;
-      $('#set-rounds').textContent = lv.rounds;
-      $('#set-rounds-hint').textContent = lv.games + (lv.games === 1 ? ' game' : ' games') + ' of ' + R.ROUNDS + ' rounds';
-      $('#set-note').textContent = UI.settingsNote ? UI.settingsNote(lv) : '';
+      renderSwitch(hardSw, v.hardMode);
+      // Turning Hard Mode on restarts the game when the dialog closes (below), so say so, in bold.
+      const restart = v.hardMode && !hardAtOpen;
+      note.classList.toggle('is-strong', restart);
+      note.textContent = restart
+        ? 'Enabling Hard Mode will restart the game. Press the close button to continue.'
+        : UI.settingsNote ? UI.settingsNote(v) : '';
     }
-    const dlg = wireDialog('#settings-layer', '#settings-btn', '#settings-close', render);
+    const dlg = wireDialog('#settings-layer', '#settings-btn', '#settings-close', () => {
+      hardAtOpen = S.get().hardMode;
+      render();
+    }, () => {
+      // Closed with Hard Mode switched on: start over as a fresh 8-round game. The setting is already saved, so a reload
+      // is the cleanest restart (it drops every timer and animation of the game in progress and lands on the Deal button).
+      if (S.get().hardMode && !hardAtOpen) window.location.reload();
+    });
     UI.openSettings = dlg.open;
     UI.closeSettings = dlg.close;
 
@@ -117,7 +126,7 @@
       S.set({ sound: !S.get().sound });
       if (S.get().sound && window.ClubsSound) window.ClubsSound.play('phip'); // a sample click when turned on
     });
-    slider.addEventListener('input', () => S.set({ level: parseInt(slider.value, 10) }));
+    hardSw.addEventListener('click', () => S.set({ hardMode: !S.get().hardMode }));
     S.onChange(render);
 
     // Rules: the long text scrolls inside the dialog; the title and Close button stay put.
