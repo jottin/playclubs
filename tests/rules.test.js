@@ -347,13 +347,15 @@ test('player names show up in the scorecards, book dialogs and scoreboards, and 
   assert.equal(R.SEAT_TITLE.east, 'Player East');
 });
 
-test('difficulty levels set the number of rounds (4, 8, 12) and the computer\'s mistakes', () => {
-  assert.deepEqual(R.LEVELS.map((l) => l.rounds), [4, 8, 12]);
-  assert.deepEqual(R.LEVELS.map((l) => l.label), ['Easy', 'Medium', 'Hard']);
+test('Hard Mode off = Medium (4 rounds), on = Hard (8 rounds, looks ahead)', () => {
+  assert.deepEqual(R.LEVELS.map((l) => l.rounds), [4, 8]);
+  assert.deepEqual(R.LEVELS.map((l) => l.label), ['Medium', 'Hard']);
   assert.equal(R.levelInfo(undefined).id, R.DEFAULT_LEVEL);
-  assert.ok(R.LEVELS[0].mistakes > 0 && R.LEVELS[1].mistakes === 0 && R.LEVELS[2].mistakes === 0, 'only Easy makes mistakes');
-  assert.ok(!R.LEVELS[0].search && !R.LEVELS[1].search && R.LEVELS[2].search > 0, 'only Hard looks ahead');
-  [1, 2, 3].forEach((lv) => {
+  assert.equal(R.levelFor(false).label, 'Medium');
+  assert.equal(R.levelFor(true).label, 'Hard');
+  assert.ok(R.LEVELS.every((l) => l.mistakes === 0), 'no level makes deliberate mistakes any more');
+  assert.ok(!R.LEVELS[0].search && R.LEVELS[1].search > 0, 'only Hard looks ahead');
+  [1, 2].forEach((lv) => {
     const g = createGame({ rng: mulberry32(40 + lv), level: lv });
     assert.equal(g.state.totalRounds, 4 * lv);
     let rounds = 0;
