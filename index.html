@@ -160,21 +160,14 @@
           </button>
         </div>
 
-        <div class="setting setting-stack">
-          <div class="setting-row">
-            <label id="set-level-label" for="set-level">Difficulty Level</label>
-            <b id="set-level-name">Easy</b>
-          </div>
-          <input id="set-level" class="level-slider" type="range" min="1" max="3" step="1" value="1" aria-labelledby="set-level-label" aria-valuetext="Easy">
-          <div class="level-ticks" aria-hidden="true"><span>1 Easy</span><span>2 Medium</span><span>3 Hard</span></div>
-        </div>
-
         <div class="setting">
           <div class="setting-text">
-            <span class="setting-label">Number of Rounds</span>
-            <span class="setting-hint" id="set-rounds-hint">1 game</span>
+            <label id="set-hard-label" for="set-hard">Hard Mode</label>
+            <span class="setting-hint">Increase difficulty and rounds played.</span>
           </div>
-          <b id="set-rounds" class="setting-value">4</b>
+          <button id="set-hard" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="set-hard-label">
+            <span class="switch-state">Off</span><span class="switch-knob"></span>
+          </button>
         </div>
         <p id="set-note" class="setting-note"></p>
 
@@ -244,8 +237,7 @@
           <ul>
             <li><b>Book confirmation:</b> on, a dialog appears after every book saying who won it and why. Off skips it.</li>
             <li><b>Sound effects:</b> turn the card sounds on or off.</li>
-            <li><b>Difficulty:</b> Easy computer players sometimes make mistakes, Medium players play toward their own zone using the odds, and Hard players also look ahead.</li>
-            <li><b>Number of rounds:</b> Easy plays 4 rounds, Medium 8 and Hard 12. Zones and leaders keep rotating the same way. A change to the number of rounds starts with the next game.</li>
+            <li><b>Hard Mode:</b> off by default, and a game is 4 rounds against computer players that play toward their own zone using the odds. On, the computer players also look ahead and a game is 8 rounds. Zones and leaders keep rotating the same way. Turning Hard Mode on restarts the game when you close Settings; turning it off applies to the computer players at once, and the 4-round length starts with the next game.</li>
           </ul>
         </div>
 
