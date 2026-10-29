@@ -87,6 +87,7 @@
       last = seat === 'dealer' ? await dealerTurn() : await opponentTurn(seat);
     }
     UI.setActive(null);
+    UI.markWinner(last.result.winningCard.id); // the winning card gets .is-winner until the book is collected
 
     await UI.sleep(1000); // 1s after the fourth card, then the confirmation dialog
     if (Settings.get().confirmBooks) {
