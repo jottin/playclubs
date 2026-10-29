@@ -236,6 +236,7 @@
     el.setAttribute('aria-label', card.label + ' of ' + card.suit);
     el.innerHTML =
       '<span class="val">' + card.label + '</span>' +
+      '<span class="val val-b" aria-hidden="true">' + card.label + '</span>' + // second index, bottom-left, so an overlapped card still shows its value
       '<svg class="suit" aria-hidden="true"><use href="#s-' + card.suit + '"/></svg>';
     return el;
   }
@@ -308,10 +309,17 @@
     return anim.finished.catch(() => {});
   };
 
+  // Mark the card that won the book with .is-winner so the stylesheet can highlight it. It stays until the pile gathers.
+  UI.markWinner = function (cardId) {
+    const el = els.boardCards.querySelector('[data-id="' + cardId + '"]');
+    if (el) el.classList.add('is-winner');
+  };
+
   // Gather the four cards into a loose, slightly offset pile, then slide the pile into the winner's scorecard.
   UI.collectBook = async function (winnerSeat) {
     const cards = Array.from(els.boardCards.children);
     if (!cards.length) return;
+    cards.forEach((el) => el.classList.remove('is-winner')); // the highlight ends as the cards start to pile up
     const t = els.table.getBoundingClientRect();
     const cx = t.left + t.width / 2;
     const cy = t.top + t.height / 2;
