@@ -332,13 +332,20 @@ button { font: inherit; color: inherit; }
 
 .card .val {
   position: absolute;
-  top: calc(var(--w) * 0.08);
-  left: calc(var(--w) * 0.1);
-  font-size: calc(var(--w) * 0.27);
+  top: calc(var(--w) * 0.1);
+  left: calc(var(--w) * 0.12);
+  font-size: calc(var(--w) * 0.26);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--suit-black);
+}
+
+.card .val-b {
+  top: auto;
+  left: auto;
+  bottom: calc(var(--w) * 0.12);
+  right: calc(var(--w) * 0.13);
 }
 
 .card .suit {
@@ -411,6 +418,7 @@ button { font: inherit; color: inherit; }
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  transition: box-shadow .15s ease, filter .15s ease;
   z-index: 2;
   will-change: transform;
   pointer-events: none;
@@ -419,6 +427,25 @@ button { font: inherit; color: inherit; }
 .board-card[data-seat="east"]   { left: calc(50% + var(--slot-dx)); rotate: 4deg; }
 .board-card[data-seat="north"]  { top: calc(50% - var(--slot-dy)); rotate: -3deg; }
 .board-card[data-seat="dealer"] { top: calc(50% + var(--slot-dy)); rotate: 3deg; }
+.board-card.is-winner {
+  box-shadow: 0 0 8px 2px #fbbf2480, 0 0 10px 10px #24fbbd33;
+}
+.board-card.is-winner::before, .board-card.is-winner::after {
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+.board-card.is-winner::before {
+  background: linear-gradient(120deg, #b03bff 0%, #69adff 50%, #fbbf24 100%) border-box;
+  border-radius: 8px;
+  margin: -.125em;
+}
+.board-card.is-winner::after {
+  background-color: #fff;
+  border-radius: 4px;
+  margin: .1em;
+}
 
 /* ---------- Dialogs ---------- */
 
