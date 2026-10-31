@@ -438,7 +438,7 @@
       .join('');
     const html =
       '<h3 class="sheet-title">Round ' + d.round + ' complete</h3>' +
-      '<p class="sheet-sub">Finish inside your safe zone: 0-2 pays +10 (+20 for no clubs), 3-4 pays +30, 5-6 pays +50. Otherwise each club won costs 10 points. Reach 0 or 200 and you bounce back to 100 (\u21ba).</p>' +
+      '<p class="sheet-sub">Inside zones: 0-2 (1-2 pays +10, 0 pays +20), 3-4 pays +30, 5-6 pays +50. Outside zones: each club costs -10 points. Bounce back: 0 or 200 points scored resets total game points (\u21ba).</p>' +
       '<table class="score-table"><thead><tr><th>Player</th><th>Zone</th><th>Won</th><th>Round</th><th>Game</th></tr></thead><tbody>' +
       rows + '</tbody></table>' +
       (d.note ? '<p class="sheet-note">' + d.note + '</p>' : '') +
