@@ -1,7 +1,7 @@
 /* Clubs service worker: lets the game open with no connection.
    Network first, so a normal visit always gets the newest files; the saved copy is only used when offline.
    Bump CACHE when you want to clear old saved files. */
-const CACHE = 'clubs-v1';
+const CACHE = 'clubs-v1-m9';
 const CORE = [
   './', 'index.html', 'manifest.webmanifest', 'css/styles.css',
   'js/rules.js', 'js/names.js', 'js/settings.js', 'js/sound.js', 'js/ai.js', 'js/engine.js', 'js/ui.js', 'js/game.js', 'js/pwa.js',
