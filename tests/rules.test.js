@@ -193,7 +193,7 @@ test('engine issues the zones at the start of each round; there is no bidding ph
     g.completeBook();
   }
   const fin = g.finishRound();
-  R.SEATS.forEach((s) => assert.equal(g.state.gamePoints[s], 100 + fin.points[s]));
+  R.SEATS.forEach((s) => assert.equal(g.state.gamePoints[s], R.applyCap(100 + fin.points[s]).total));
   assert.deepEqual(fin.zones, R.zonesForRound(0));
   g.startRound();
   assert.deepEqual(g.state.zones, R.zonesForRound(1));
@@ -377,4 +377,52 @@ test('zones keep rotating cleanly past round 4', () => {
   assert.deepEqual(R.zonesForRound(4), R.zonesForRound(0));
   assert.deepEqual(R.zonesForRound(9), R.zonesForRound(1));
   assert.equal(R.leaderForRound(5), R.leaderForRound(1));
+});
+
+test('100-point cap rule: 0 or less and 200 or more bounce back to 100', () => {
+  assert.equal(R.CAP_LOW, 0);
+  assert.equal(R.CAP_HIGH, 200);
+  assert.deepEqual(R.applyCap(1), { total: 1, bounce: null });
+  assert.deepEqual(R.applyCap(199), { total: 199, bounce: null });
+  assert.deepEqual(R.applyCap(0), { total: 100, bounce: 'low' });
+  assert.deepEqual(R.applyCap(-70), { total: 100, bounce: 'low' });
+  assert.deepEqual(R.applyCap(200), { total: 100, bounce: 'high' });
+  assert.deepEqual(R.applyCap(230), { total: 100, bounce: 'high' });
+});
+
+test('engine applies the cap after each round and reports the bounce', () => {
+  const g = createGame({ rng: mulberry32(11) });
+  g.startRound();
+  while (g.state.phase === 'playing') {
+    for (let i = 0; i < 4; i++) { const seat = g.state.turn; g.play(seat, g.aiPick(seat).id); }
+    g.completeBook();
+  }
+  // force the totals so the next scoring crosses each limit
+  g.state.gamePoints.dealer = 5;   // any loss takes it to 0 or below
+  g.state.gamePoints.west = 195;   // any win takes it to 200 or above
+  g.state.gamePoints.north = 100;
+  g.state.gamePoints.east = 100;
+  const fin = g.finishRound();
+  R.SEATS.forEach((seat) => {
+    const expected = R.applyCap([5, 195, 100, 100][R.SEATS.indexOf(seat)] + fin.points[seat]);
+    assert.equal(fin.before[seat], [5, 195, 100, 100][R.SEATS.indexOf(seat)] + fin.points[seat]);
+    assert.equal(fin.bounces[seat], expected.bounce);
+    assert.equal(g.state.gamePoints[seat], expected.total);
+    assert.ok(g.state.gamePoints[seat] > 0 && g.state.gamePoints[seat] < 200, 'totals stay strictly between 0 and 200');
+  });
+});
+
+test('totals always stay between 1 and 199 over full games', () => {
+  for (let n = 0; n < 40; n++) {
+    const g = createGame({ rng: mulberry32(500 + n), rounds: 8 });
+    while (g.state.phase !== 'game-over') {
+      g.startRound();
+      while (g.state.phase === 'playing') {
+        for (let i = 0; i < 4; i++) { const seat = g.state.turn; g.play(seat, g.aiPick(seat).id); }
+        g.completeBook();
+      }
+      g.finishRound();
+      R.SEATS.forEach((seat) => assert.ok(g.state.gamePoints[seat] >= 1 && g.state.gamePoints[seat] <= 199));
+    }
+  }
 });
