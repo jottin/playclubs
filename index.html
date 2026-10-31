@@ -181,7 +181,7 @@
         <h3 class="sheet-title" id="rules-title">How to Play Clubs</h3>
 
         <div id="rules-body" tabindex="0" aria-label="Rules text">
-          <p>Clubs is a trick-taking card game in which club cards decide the score. You play the Dealer (bottom of the screen) against three computer players. Everyone starts with 100 points, and the player with the most points after the last round wins. At the start of each round every player is issued a safe zone for how many clubs they will win, and one player goes without. End the round inside your zone to earn points; every club won outside it costs you 10.</p>
+          <p>Clubs is a trick-taking card game in which club cards decide the score. You play the Dealer (bottom of the screen) against three computer players. Everyone starts with 100 points, and the player with the most points after the last round wins. At the start of each round every player is issued a safe zone for how many clubs they will win, and one player goes without. End the round inside your zone to earn points; every club won outside it costs you 10. If your total ever reaches 0 or 200, it bounces back to 100.</p>
 
           <h4>1. Objective &amp; scoring</h4>
           <p>Each round, try to finish inside the safe zone you were issued. Every club card is worth 10 points regardless of rank, and you collect the clubs that are in the books you win. Zones are scored when the round ends.</p>
@@ -196,7 +196,8 @@
               <tr><td>No zone this round</td><td class="neg">&minus;10 for every club won (0 if you win none)</td></tr>
             </tbody>
           </table>
-          <p>Winning no clubs never costs points. Examples: zone 0-2, won 0 scores +20. Zone 0-2, won 3 scores &minus;30. Zone 3-4, won 4 scores +30. Zone 3-4, won 0 scores 0. Zone 5-6, won 6 scores +50. Zone 5-6, won 7 scores &minus;70. No zone, won 2 scores &minus;20. Every zone you hit adds points, so you can finish the game with more than 100.</p>
+          <p>Winning no clubs never costs points. Examples: zone 0-2, won 0 scores +20. Zone 0-2, won 3 scores &minus;30. Zone 3-4, won 4 scores +30. Zone 3-4, won 0 scores 0. Zone 5-6, won 6 scores +50. Zone 5-6, won 7 scores &minus;70. No zone, won 2 scores &minus;20.</p>
+          <p><b>The 100-point cap:</b> after each round, a player whose total has fallen to 0 or below, or risen to 200 or above, goes straight back to 100. Whatever the round produced beyond that is lost, so the cap works both ways: it rescues a player who has hit rock bottom and pulls back a runaway leader. Everyone else keeps their total. The scorecard shows the round's result first, then the bounce, and the round summary marks it with &#8634;.</p>
 
           <h4>2. Setup &amp; dealing</h4>
           <p>Every round starts with a fresh shuffle of a 52-card deck. Each of the four players gets 7 cards; the other 24 are set aside face-down and are not used that round, so the number of clubs in play varies. Aces are highest and 2s are lowest. A round has one book (trick) per card in a hand: 7 books.</p>
