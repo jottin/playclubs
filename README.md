@@ -1,4 +1,5 @@
 # Clubs (playclubs.net) - Version 1, Milestone 9
+(in-game rules dialog, sound effects, sound switch in settings)
 
 Clubs is a trick-taking card game in which club cards decide the score. In a game where you face off against 3 opponents, all 4 players fight to win points. Points can be won or lost through each round as players hit or miss their safe zones. End the round inside your zone to win points—miss it, and every club costs you!
 
@@ -21,7 +22,7 @@ npm run build:single   # writes dist/clubs.html, one self-contained file
 index.html        page structure + SVG suit icons
 css/styles.css    all styling; layout sizes come from the variables at the top
 js/rules.js       pure rules: deck, dealing, follow-suit, book winner, zone rotation, scoring, rankings
-js/settings.js    player settings (book confirmation, sound, Hard Mode) saved in localStorage
+js/settings.js    player settings (book confirmation, difficulty) saved in localStorage
 js/sound.js       sound effects made live with Web Audio (no audio files)
 js/ai.js          opponent card choice (plays toward the safe zone it was issued)
 js/engine.js      game state machine (rounds, safe zones, books, leaders). No DOM.
@@ -56,7 +57,7 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
    zone, North 0-2, East 3-4, Dealer 5-6), so over four rounds every player holds each zone once and sits one
    round out with no zone. Zones show on every scorecard ("Zone 3-4 - Won: 1"). Only the four-player game is defined
    so far (`zonesForRound` in `rules.js`); 3 and 5 players are still to be decided.
-5. **Scoring.** Every club you win is worth 10 points. Everyone starts the game on 100 points; the highest
+5. **Scoring (Milestone 6).** Every club you win is worth 10 points. Everyone starts the game on 100 points; the highest
    total after the last round wins (4 rounds, or 8 with Hard Mode, see Settings). Rewards grow as the zone gets harder to hit:
    - Zone **0-2**: finish with no clubs **+20**, or with 1 or 2 clubs **+10**.
    - Zone **3-4**: finish with 3 or 4 clubs **+30**.
@@ -64,11 +65,15 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
    - Otherwise every club you won costs **10** points. Winning no clubs never costs anything.
    - No zone: every club you win costs 10 points (the same, without the safety net). Winning no clubs scores 0.
    Examples: 0-2 / won 0 = +20, 0-2 / won 2 = +10, 0-2 / won 3 = -30, 3-4 / won 4 = +30, 3-4 / won 0 = 0,
-   3-4 / won 2 = -20, 5-6 / won 6 = +50, 5-6 / won 7 = -70, 5-6 / won 4 = -40, no zone / won 2 = -20. Scores can end above 100.
+   3-4 / won 2 = -20, 5-6 / won 6 = +50, 5-6 / won 7 = -70, 5-6 / won 4 = -40, no zone / won 2 = -20. Scores never end below 1 or above 199.
+   **100-point cap rule:** after each round, a total of 0 or less, or 200 or more, goes straight back to 100
+   (`applyCap` in `rules.js`, applied in `finishRound` in `engine.js`). Anything beyond the limit is lost. The scorecard shows the
+   round's result first and then the bounce; the round summary marks it with a loop arrow and a note.
    Scoring lives in `scoreZone` (`rules.js`). The AI weighs cards in *clubs* (points / 10): `zoneUtility`.
 6. **Scorecards** show `Zone` and `Won` live (green check while you are inside your zone, red triangle once you have won more than it allows; plain with no zone) plus Game Points.
    Round Points appear only in the round summary dialog.
-7. **Final ranking** uses shared places when game points are equal (1st, 1st, 3rd, 4th).
+7. **Final ranking** uses shared places when game points are equal (1st, 1st, 3rd, 4th). Totals include the bounces, so
+   they can differ from the sum of the rounds (the final scoreboard says so).
 
 ## Suit icons and player names
 
@@ -102,8 +107,8 @@ Close with the button, Esc or a tap outside. Values are saved in localStorage (`
 
 - **Book Confirmation** (on/off switch): off skips the dialog after each book; the cards just pause, then slide to the winner.
 - **Hard Mode** (on/off switch, off by default) sets how well the computer players play and how long a game is (`LEVELS` in `rules.js`).
-  Off = **Medium**: 4 rounds (one cycle, every player leads once); the computer plays toward its own safe zone using the odds (the opponent of milestones 1-9).
-  On = **Hard**: 8 rounds (two cycles); the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
+  Off = **Medium**: 4 rounds (1 game); the computer plays toward its own safe zone using the odds (the opponent of milestones 1-9).
+  On = **Hard**: 8 rounds (2 games); the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
   cards 60 random ways, plays the round out and keeps the card with the best average score. About 20 points a game better than Medium
   in self-play. The old Easy level (random mistakes) and the 12-round game were removed; `mistakes` is still supported by the engine.
   Zones and leaders keep rotating every round. Games longer than 4 rounds show one column per 4-round game (G1, G2) on the final scoreboard.
@@ -147,8 +152,11 @@ how often the zone is hit, plus the spread of final scores, ties and seat fairne
 its zone (or just avoids clubs with none) and ignores everyone else's. Measured with 8000 games, average points
 per round: 0-2 -0.5 (hit 71%), 3-4 -2.0 (hit 33%), 5+ -1.8 (hit 13%), no zone -13.7 (these were measured before M7's x10 scoring and the 5-6 change). With the 5-6 zone (3000 games, points per
 round): 0-2 -1.8 (hit 69%), 3-4 -2.3 (hit 30%), 5-6 -7.3 (hit 9%, was -3.1 and 12% as 5+), no zone -14.8. 5-6 is now clearly the hardest zone; if it
-feels too harsh, raise its `reward` in `ZONES` (`rules.js`). Average final 82 (sd 51), a
-tie for first about 11%, about 36% of players finish above 100, and each seat wins about a quarter of the games.
+feels too harsh, raise its `reward` in `ZONES` (`rules.js`). With the 100-point cap (2000 games): average final 88 (sd 39), first-to-last gap 80
+(110 without the cap), a tie for first about 15%, and each seat wins about a quarter of the games. A player is sent
+back from 0 about 0.4 times per 4-round game (about 1.2 per 8-round game) and back from 200 only about once in 25 games.
+In comparison tests (computer players unaware of the cap), the player in last place at halfway went on to win
+5.7% of 4-round games (2.3% without the cap) and 11.8% of 8-round games (2.8% without; Medium AI used for those).
 
 ## Next steps toward iPhone / Android
 
@@ -157,13 +165,4 @@ folder or a copy of it). The viewport meta, safe-area insets and touch handling 
 
 ## Felt texture (9)
 
-The green felt is a hand-drawn SVG background in `css/styles.css` (plain shapes, no SVG filters), so Chrome, Safari and Firefox all draw
-exactly the same felt. An earlier version used an SVG noise filter, which each browser rendered differently, and then a pre-rendered
-`img/felt.jpg` tile. To change the felt, edit the SVG in the stylesheet.
-
-## Going live (9)
-
-The game is hosted on GitHub Pages at https://playclubs.net (custom domain, HTTPS). Home-screen and offline support: `manifest.webmanifest`,
-the icons in `icons/`, `favicon.svg`, and `sw.js`, a small network-first service worker registered by `js/pwa.js` (https and localhost only).
-Bump the cache name in `sw.js` to force players onto new files. Link previews use `og-image.png` (1200x630). Opening `index.html` straight from
-disk works for play, but the browser console will complain that it cannot load the manifest from `file://`; that is harmless.
+The green felt used to be an SVG noise filter, which each browser draws differently (Safari and Firefox gave a coarse "maze" grain). It is now a pre-rendered tile, `img/felt.jpg` (1x) and `img/felt@2x.jpg` (2x), so every browser shows the same felt. `tools/build-single-file.js` inlines it into `dist/clubs.html`.
