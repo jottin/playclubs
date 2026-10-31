@@ -14,7 +14,7 @@ const pct = (x) => (100 * x).toFixed(1) + '%';
 const slots = {}; // 'none' | 0 | 1 | 2 -> { n, points, hit }
 const finals = [];
 const seatWin = { dealer: 0, west: 0, north: 0, east: 0 };
-let tie = 0, gap = 0, above = 0, rounds = 0, clubSum = 0, zeroClubs = 0;
+let tie = 0, gap = 0, low = 0, high = 0, rounds = 0, clubSum = 0, zeroClubs = 0;
 for (let g = 0; g < GAMES; g++) {
   const st = playGame(1e5 + g, (r) => {
     const key = r.zone === null ? 'none' : r.zone;
@@ -27,7 +27,8 @@ for (let g = 0; g < GAMES; g++) {
   if (top.length > 1) tie++;
   top.forEach((t) => (seatWin[t.seat] += 1 / top.length));
   gap += ranked[0].points - ranked[3].points;
-  R.SEATS.forEach((s) => { finals.push(st.gamePoints[s]); if (st.gamePoints[s] > R.START_POINTS) above++; });
+  R.SEATS.forEach((s) => { finals.push(st.gamePoints[s]); });
+  st.history.forEach((h) => R.SEATS.forEach((s) => { if (h.bounces[s] === 'low') low++; else if (h.bounces[s] === 'high') high++; }));
 }
 const avg = finals.reduce((a, b) => a + b, 0) / finals.length;
 const sd = Math.sqrt(finals.reduce((a, b) => a + (b - avg) ** 2, 0) / finals.length);
@@ -38,5 +39,6 @@ console.log('average points per round by slot:');
   console.log('  ' + label.padEnd(8) + (c.points / c.n).toFixed(2).padStart(6) + (k === 'none' ? '' : '   hit ' + pct(c.hit / c.n)));
 });
 console.log('clubs won per player-round ' + (clubSum / rounds).toFixed(2) + ', rounds with no clubs ' + pct(zeroClubs / rounds));
-console.log('average final ' + avg.toFixed(1) + ' (sd ' + sd.toFixed(1) + '), first-to-last gap ' + (gap / GAMES).toFixed(1) + ', tie for 1st ' + pct(tie / GAMES) + ', players above ' + R.START_POINTS + ': ' + pct(above / finals.length));
+console.log('average final ' + avg.toFixed(1) + ' (sd ' + sd.toFixed(1) + '), first-to-last gap ' + (gap / GAMES).toFixed(1) + ', tie for 1st ' + pct(tie / GAMES));
+console.log('bounces per game: back from ' + R.CAP_LOW + ' ' + (low / GAMES).toFixed(2) + ', back from ' + R.CAP_HIGH + ' ' + (high / GAMES).toFixed(2));
 console.log('share of wins by seat: ' + Object.keys(seatWin).map((k) => k + ' ' + pct(seatWin[k] / GAMES)).join(', '));
