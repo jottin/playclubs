@@ -38,7 +38,7 @@
       clubsWon: zeroes(),
       played: [],
       gamePoints: filled(R.START_POINTS),
-      history: [], // one entry per finished round: { clubs, zones, points, kinds }
+      history: [], // one entry per finished round: { clubs, zones, points, kinds, before, bounces }
       lastResult: null,
     };
 
@@ -105,8 +105,17 @@
     function finishRound() {
       if (state.phase !== 'round-complete') throw new Error('Round is not finished');
       const scored = R.scoreRound(state.clubsWon, state.zones);
-      R.SEATS.forEach((s) => (state.gamePoints[s] += scored.points[s]));
+      const bounces = {}; // seat -> 'low' | 'high' | null: the 100-point cap rule
+      const before = {}; // the total the round produced, before any bounce
+      R.SEATS.forEach((s) => {
+        before[s] = state.gamePoints[s] + scored.points[s];
+        const c = R.applyCap(before[s]);
+        state.gamePoints[s] = c.total;
+        bounces[s] = c.bounce;
+      });
       const entry = {
+        before: before,
+        bounces: bounces,
         clubs: Object.assign({}, state.clubsWon),
         zones: Object.assign({}, state.zones),
         points: scored.points,

@@ -169,6 +169,9 @@
    */
   const CLUB_POINTS = 10;
   const START_POINTS = 100;
+  // The 100-point cap rule: a total that reaches CAP_LOW or below, or CAP_HIGH or above, goes straight back to START_POINTS.
+  const CAP_LOW = 0;
+  const CAP_HIGH = 200;
   const ZONES = [
     { id: 0, min: 0, max: 2, label: '0-2', reward: 10, zeroReward: 20 },
     { id: 1, min: 3, max: 4, label: '3-4', reward: 30 },
@@ -229,6 +232,13 @@
     return { points: points, kinds: kinds };
   }
 
+  // The 100-point cap rule. Returns the new total and which limit (if any) was hit: 'low' (0 or less), 'high' (200 or more).
+  function applyCap(total) {
+    if (total <= CAP_LOW) return { total: START_POINTS, bounce: 'low' };
+    if (total >= CAP_HIGH) return { total: START_POINTS, bounce: 'high' };
+    return { total: total, bounce: null };
+  }
+
   // Most points first; ties share a place (1, 1, 3, 4).
   function rankPlayers(totals) {
     const rows = SEATS.map((seat) => ({ seat: seat, points: totals[seat] === undefined ? START_POINTS : totals[seat] }));
@@ -243,7 +253,7 @@
     SUITS, SEATS, SEAT_NAME, SEAT_TITLE, setPlayerNames, resetPlayerNames, CARDS_PER_PLAYER, BOOKS_PER_ROUND, ROUNDS,
     LEVELS, DEFAULT_LEVEL, levelInfo, levelFor,
     makeCard, createDeck, shuffle, deal, nextSeat, rightOf, leaderForRound,
-    legalCards, resolveBook, describeBook, scoreZone, zoneUtility, scoreRound, rankPlayers,
-    CLUB_POINTS, START_POINTS, ZONES, NO_ZONE_LABEL, zoneOf, zoneLabel, zoneReward, zonesForRound,
+    legalCards, resolveBook, describeBook, scoreZone, zoneUtility, scoreRound, applyCap, rankPlayers,
+    CLUB_POINTS, START_POINTS, CAP_LOW, CAP_HIGH, ZONES, NO_ZONE_LABEL, zoneOf, zoneLabel, zoneReward, zonesForRound,
   };
 });

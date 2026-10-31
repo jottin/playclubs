@@ -433,12 +433,12 @@
       .map(
         (r) =>
           '<tr><td class="who">' + r.name + '</td><td>' + r.zone + '</td><td>' + r.won +
-          '</td><td class="' + r.kind + '">' + r.pointsText + '</td><td class="total">' + r.total + '</td></tr>'
+          '</td><td class="' + r.kind + '">' + r.pointsText + '</td><td class="total">' + r.total + (r.bounce ? ' \u21ba' : '') + '</td></tr>'
       )
       .join('');
     const html =
       '<h3 class="sheet-title">Round ' + d.round + ' complete</h3>' +
-      '<p class="sheet-sub">Finish inside your safe zone: 0-2 pays +10 (+20 for no clubs), 3-4 pays +30, 5-6 pays +50. Otherwise each club won costs 10 points.</p>' +
+      '<p class="sheet-sub">Finish inside your safe zone: 0-2 pays +10 (+20 for no clubs), 3-4 pays +30, 5-6 pays +50. Otherwise each club won costs 10 points. Reach 0 or 200 and you bounce back to 100 (\u21ba).</p>' +
       '<table class="score-table"><thead><tr><th>Player</th><th>Zone</th><th>Won</th><th>Round</th><th>Game</th></tr></thead><tbody>' +
       rows + '</tbody></table>' +
       (d.note ? '<p class="sheet-note">' + d.note + '</p>' : '') +
@@ -462,6 +462,7 @@
       '<p class="sheet-sub">' + d.headline + '</p>' +
       '<table class="score-table"><thead><tr><th></th><th>Player</th>' + head + '<th>Total</th></tr></thead><tbody>' +
       rows + '</tbody></table>' +
+      (d.note ? '<p class="sheet-note">' + d.note + '</p>' : '') +
       '<button id="modal-continue" class="btn" type="button">Play Again</button>';
     return showModal(html, 'modal-continue');
   };

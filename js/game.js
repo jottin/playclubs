@@ -163,11 +163,22 @@
     }
 
     const fin = game.finishRound();
-    R.SEATS.forEach((seat) => UI.setScore(seat, 'game', s.gamePoints[seat], true));
+    // Show what the round produced first; any player who reached 0 or 200 then bounces back to 100.
+    R.SEATS.forEach((seat) => UI.setScore(seat, 'game', fin.before[seat], true));
     await UI.sleep(700);
+    const bounced = R.SEATS.filter((seat) => fin.bounces[seat]);
+    if (bounced.length) {
+      await UI.sleep(500);
+      bounced.forEach((seat) => UI.setScore(seat, 'game', s.gamePoints[seat], true));
+      await UI.sleep(700);
+    }
 
     const hit = R.SEATS.filter((seat) => fin.kinds[seat] === 'bonus').map((seat) => R.SEAT_NAME[seat]);
-    const note = hit.length ? 'Inside their zone: ' + joinNames(hit) + '.' : 'Nobody finished inside their zone.';
+    let note = hit.length ? 'Inside their zone: ' + joinNames(hit) + '.' : 'Nobody finished inside their zone.';
+    const low = R.SEATS.filter((seat) => fin.bounces[seat] === 'low').map((seat) => R.SEAT_NAME[seat]);
+    const high = R.SEATS.filter((seat) => fin.bounces[seat] === 'high').map((seat) => R.SEAT_NAME[seat]);
+    if (low.length) note += ' ' + joinNames(low) + ' hit ' + R.CAP_LOW + ' and bounce' + (low.length > 1 ? '' : 's') + ' back to ' + R.START_POINTS + '.';
+    if (high.length) note += ' ' + joinNames(high) + ' reached ' + R.CAP_HIGH + ' and ' + (high.length > 1 ? 'drop' : 'drops') + ' back to ' + R.START_POINTS + '.';
 
     const summary = UI.showRoundSummary({
       round: s.roundIndex + 1,
@@ -178,6 +189,7 @@
         pointsText: fmtPoints(fin.points[seat]),
         kind: fin.kinds[seat],
         total: s.gamePoints[seat],
+        bounce: fin.bounces[seat],
       })),
       note: note,
       button: fin.gameOver ? 'See Final Scores' : 'Start Round ' + (s.roundIndex + 2),
@@ -214,8 +226,10 @@
     } else {
       headline = joinNames(winners.map((w) => R.SEAT_NAME[w.seat])) + ' tie for first place.';
     }
+    const bounced = s.history.some((h) => R.SEATS.some((seat) => h.bounces[seat]));
     return {
       headline: headline,
+      note: bounced ? 'Totals include the bounce back to ' + R.START_POINTS + ' at ' + R.CAP_LOW + ' or ' + R.CAP_HIGH + ', so they can differ from the sum of the rounds.' : '',
       columns: columns,
       rows: ranked.map((r) => ({
         place: r.place,
