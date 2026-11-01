@@ -19,20 +19,25 @@
   // (the game picks four random names); the defaults below are what you see without that.
   const SEAT_NAME = { dealer: 'Dealer (You)', west: 'West', north: 'North', east: 'East' };
   const SEAT_TITLE = { dealer: 'Dealer (You)', west: 'Player West', north: 'Player North', east: 'Player East' };
-  const DEFAULT_NAMES = { name: Object.assign({}, SEAT_NAME), title: Object.assign({}, SEAT_TITLE) };
+  // SEAT_SHORT is the plain name: the south scorecard and the "Your Hand (<name>)" label use it, everything else uses SEAT_NAME.
+  const SEAT_SHORT = { dealer: 'Dealer', west: 'West', north: 'North', east: 'East' };
+  const DEFAULT_NAMES = { name: Object.assign({}, SEAT_NAME), title: Object.assign({}, SEAT_TITLE), short: Object.assign({}, SEAT_SHORT) };
 
-  // names = { dealer: 'Hugo', west: 'Ida', ... }. The human (dealer seat) is shown as "Hugo (You)".
+  // names = { dealer: 'Hugo', west: 'Ida', ... }. The human (dealer seat) is shown as "Hugo (You)" in dialogs and summaries;
+  // the south scorecard and the hand label use the plain name (SEAT_SHORT).
   function setPlayerNames(names) {
     SEATS.forEach((seat) => {
       const label = seat === 'dealer' ? names[seat] + ' (You)' : names[seat];
       SEAT_NAME[seat] = label;
       SEAT_TITLE[seat] = label;
+      SEAT_SHORT[seat] = names[seat];
     });
   }
   function resetPlayerNames() {
     SEATS.forEach((seat) => {
       SEAT_NAME[seat] = DEFAULT_NAMES.name[seat];
       SEAT_TITLE[seat] = DEFAULT_NAMES.title[seat];
+      SEAT_SHORT[seat] = DEFAULT_NAMES.short[seat];
     });
   }
 
@@ -250,7 +255,7 @@
   }
 
   return {
-    SUITS, SEATS, SEAT_NAME, SEAT_TITLE, setPlayerNames, resetPlayerNames, CARDS_PER_PLAYER, BOOKS_PER_ROUND, ROUNDS,
+    SUITS, SEATS, SEAT_NAME, SEAT_TITLE, SEAT_SHORT, setPlayerNames, resetPlayerNames, CARDS_PER_PLAYER, BOOKS_PER_ROUND, ROUNDS,
     LEVELS, DEFAULT_LEVEL, levelInfo, levelFor,
     makeCard, createDeck, shuffle, deal, nextSeat, rightOf, leaderForRound,
     legalCards, resolveBook, describeBook, scoreZone, zoneUtility, scoreRound, applyCap, rankPlayers,

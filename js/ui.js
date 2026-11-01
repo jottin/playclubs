@@ -168,8 +168,11 @@
   // Write each seat's current display name (R.SEAT_NAME) onto its scorecard.
   UI.setNames = function () {
     R.SEATS.forEach((seat) => {
-      $('.name', els.cards[seat]).textContent = R.SEAT_NAME[seat];
+      $('.name', els.cards[seat]).textContent = R.SEAT_SHORT[seat];
     });
+    // The hand label carries the human player's name, which always matches the south scorecard.
+    const handTitle = $('.hand-title');
+    if (handTitle) handTitle.textContent = 'Your Hand (' + R.SEAT_SHORT.dealer + ')';
   };
 
   UI.setScore = function (seat, field, value, animate) {

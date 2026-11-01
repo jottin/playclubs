@@ -35,8 +35,8 @@
     'Vince', 'Virginie', 'Walter', 'Wanda', 'Wendy', 'Whitney', 'Wilfred', 'William', 'Wilma',
   ];
 
-  // The human player's scorecard reads "<name> (You)" and has to fit the same card width as the old
-  // "Dealer (You)", so the human gets a short name.
+  // The human player's name sits on the south scorecard and in the "Your Hand (<name>)" label,
+  // so the human gets a short name.
   const MAX_HUMAN_LENGTH = 6;
 
   // Four different names, one per seat. `rng` makes picks reproducible (the ?seed= switch).
