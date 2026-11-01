@@ -327,7 +327,7 @@ test('player names: a real hurricane name per seat, different every game', () =>
     const names = R.SEATS.map((s) => picked[s]);
     assert.equal(new Set(names).size, 4, 'four different names');
     assert.ok(names.every((n) => N.HURRICANE_NAMES.includes(n)));
-    assert.ok(picked.dealer.length <= N.MAX_HUMAN_LENGTH, 'the human name has to fit "(You)" on the scorecard');
+    assert.ok(picked.dealer.length <= N.MAX_HUMAN_LENGTH, 'the human name has to fit on the scorecard');
   }
   const first = N.pickNames(R.SEATS, () => 0.5);
   assert.deepEqual(N.pickNames(R.SEATS, () => 0.5), first, 'same random source gives the same names');
@@ -338,12 +338,14 @@ test('player names: a real hurricane name per seat, different every game', () =>
 
 test('player names show up in the scorecards, book dialogs and scoreboards, and can be reset', () => {
   R.setPlayerNames({ dealer: 'Hugo', west: 'Ida', north: 'Camille', east: 'Ike' });
-  assert.equal(R.SEAT_NAME.dealer, 'Hugo (You)');
+  assert.equal(R.SEAT_NAME.dealer, 'Hugo (You)'); // dialogs and summaries
+  assert.equal(R.SEAT_SHORT.dealer, 'Hugo'); // south scorecard and hand label
   assert.equal(R.SEAT_NAME.north, 'Camille');
   const titles = R.SEATS.map((w) => R.describeBook({ winner: w, reason: 'highest-lead-suit', clubs: 0 }).title);
   assert.deepEqual(titles, ['Hugo (You) won the book!', 'Ida won the book!', 'Camille won the book!', 'Ike won the book!']);
   R.resetPlayerNames();
   assert.equal(R.SEAT_NAME.dealer, 'Dealer (You)');
+  assert.equal(R.SEAT_SHORT.dealer, 'Dealer');
   assert.equal(R.SEAT_TITLE.east, 'Player East');
 });
 
