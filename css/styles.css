@@ -397,10 +397,12 @@ button { font: inherit; color: inherit; }
   margin-left: calc(-.6 * max(0px, (var(--n) * var(--hw) - 100cqw) / (var(--n) - 1)));
 }
 .hand-card.playable { transform: translateY(-8px); }
+.hand-card.playable::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 20px; }
 .hand-card.dim { filter: brightness(0.5); }
 .hand-card:focus-visible { outline: 3px solid #22d3ee; outline-offset: 2px; }
 @media (hover: hover) {
   .hand-card.playable:hover { transform: translateY(-16px); }
+  .hand-card.playable:hover::after { bottom: -8px; }
 }
 .hand-card.playable:active { transform: translateY(-4px) scale(0.98); }
 
