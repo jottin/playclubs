@@ -70,7 +70,7 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
    (`applyCap` in `rules.js`, applied in `finishRound` in `engine.js`). Anything beyond the limit is lost. The scorecard shows the
    round's result first and then the bounce; the round summary marks it with a loop arrow and a note.
    Scoring lives in `scoreZone` (`rules.js`). The AI weighs cards in *clubs* (points / 10): `zoneUtility`.
-6. **Scorecards** show `Zone` and `Won` live (green check while you are inside your zone, red triangle once you have won more than it allows; plain with no zone) plus Game Points.
+6. **Scorecards** show `Zone` and `Won` live (green check while you are inside your zone, red triangle once you have won more than it allows; plain with no zone) plus Score.
    Round Points appear only in the round summary dialog.
 7. **Final ranking** uses shared places when game points are equal (1st, 1st, 3rd, 4th). Totals include the bounces, so
    they can differ from the sum of the rounds (the final scoreboard says so).
@@ -82,8 +82,8 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
   Red cards also colour their rank letters (`.card.red .val`).
 - `js/names.js` holds the name list: every retired Atlantic hurricane name plus the six current rotating lists
   (224 names). `pickNames` gives each game four different names; the human (dealer seat) gets a name of 6 letters
-  or fewer so "Name (You)" fits the scorecard. `R.setPlayerNames` pushes them into `SEAT_NAME` / `SEAT_TITLE`, which
-  every dialog and scoreboard reads. With `?seed=N` the names are reproducible too.
+  or fewer so it fits the scorecard. `R.setPlayerNames` pushes them into `SEAT_NAME` / `SEAT_TITLE`, which
+  every dialog and scoreboard reads ("Name (You)" for the human). `SEAT_SHORT` holds the plain names for the south scorecard and the "Your Hand (Name)" label. With `?seed=N` the names are reproducible too.
 
 ## Zone badge (7)
 
