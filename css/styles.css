@@ -2,24 +2,24 @@
    CLUBS Game Styles:
    Layout board (75%) over hand area (25%),
    Sizes and color variables listed below,
-   Seamless felt texture embedded as svg,
+   Seamless felt texture and card pattern embedded as svg,
    (Made with Claude, Sonnet 5.5)
 ========================================================================== */
 
 :root {
   --app-w: min(100vw, 1180px);
-  --ratio: 1.4;                                   /* card height / width */
+  --ratio: 1.4;  /* card height / width */
 
   /* Scorecards */
   --score-w: clamp(108px, 29vw, 160px);
   --score-h: 80px;
-  --edge: 20px;                                   /* gap between scorecards and board edge */
+  --edge: 20px; /* gap between scorecards and board edge */
 
   /* Card widths. Board cards must fit between the scorecards; hand cards are finger-sized. */
   --bw: clamp(32px, min((var(--app-w) / 2 - var(--score-w) - 14px) / 1.45, 9.2vh - 8px), 90px);
   --hw: clamp(46px, min(19vw, (25vh - 74px) / 1.4), 100px);
-  --slot-dx: calc(var(--bw) * 0.65);               /* west / east card offset from centre */
-  --slot-dy: calc(var(--bw) * var(--ratio) * 0.45);/* north / dealer card offset from centre */
+  --slot-dx: calc(var(--bw) * 0.65);  /* west / east card offset from centre */
+  --slot-dy: calc(var(--bw) * var(--ratio) * 0.45);  /* north / dealer card offset from centre */
 
   /* Palette */
   --felt-hi: #178c4e;
@@ -116,10 +116,10 @@ button { font: inherit; color: inherit; }
 /* ---------- Status area ---------- */
 
 #status {
-  --status-edge: 20px;                            /* gap between a status element and the board edge */
+  --status-edge: 20px;  /* gap between a status element and the board edge */
   position: absolute;
   inset: 0;
-  z-index: 1;                                     /* above the felt table, below cards and scorecards */
+  z-index: 1;  /* above the felt table, below cards and scorecards */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -132,8 +132,16 @@ button { font: inherit; color: inherit; }
   color: rgba(255, 255, 255, 0.62);
   pointer-events: none;
 }
+
 .status-item:empty { display: none; }
 #status-brand { display: flex; flex-flow: row wrap; font-weight: 700; font-size: 1.05em; color: #fffc; }
+@media (max-width: 500px) {
+  #status-brand {
+    line-height: 1em;
+    max-width: 80px;
+  }
+}
+
 #status-brand .brandmark { fill:#fffc; margin: 1px 1px 0 0; height: 18px; width: 18px; }
 #status-brand small { font-size: .8em; font-weight: normal; margin-top: -2px; }
 #status-lead {
@@ -146,13 +154,15 @@ button { font: inherit; color: inherit; }
   max-width: 10em;
   text-transform: uppercase;
 }
+
 #status-round, #status-book { font-size: .9em; }
 #status-zone { display: none; }
 .status-item.at-tl, .status-item.at-tr, .status-item.at-bl, .status-item.at-br { position: absolute; }
-.status-item.at-tl { top: var(--status-edge); left: var(--status-edge); }
+.status-item.at-tl { top: var(--status-edge); left: 15px; }
 .status-item.at-tr { top: var(--status-edge); right: var(--status-edge); text-align: right; }
 .status-item.at-bl { bottom: var(--status-edge); left: var(--status-edge); }
 .status-item.at-br { bottom: var(--status-edge); right: var(--status-edge); text-align: right; }
+
 /* Short screens (phones in landscape): tighter text and edge so the stack stays clear of the side scorecards */
 @media (max-height: 520px) {
   #status { --status-edge: 6px; font-size: 10.5px; line-height: 1.3; }
@@ -206,11 +216,13 @@ button { font: inherit; color: inherit; }
   text-align: center;
   z-index: 4;
 }
+
 #bid-picker[hidden] { display: none; }
 .bid-title { margin: 0 0 2px; font-size: 18px; font-weight: 700; }
 .bid-sub { margin: 0 0 10px; font-size: 12px; line-height: 1.35; color: rgba(255, 255, 255, 0.72); }
 .bid-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 360px; margin-inline: auto; }
 .bid-grid .bid-btn { flex: 0 0 calc((100% - 18px) / 4); }
+
 /* Narrow tables (phones, portrait): the title stays in the middle of the oval and the numbers
    sit in two rows of four along the bottom of the table, wider than the oval itself. */
 @container (max-width: 479px) {
@@ -218,7 +230,6 @@ button { font: inherit; color: inherit; }
     position: absolute; left: 50%; bottom: 4px; translate: -50% 0;
     width: min(94vw, 360px);
   }
-  /* .bid-sub { display: none; } */
   .bid-title { margin-bottom: 8px; }
   .bid-btn { min-height: 38px; }
 }
@@ -236,6 +247,7 @@ button { font: inherit; color: inherit; }
   cursor: pointer;
   transition: background 0.15s ease, transform 0.2s ease;
 }
+
 .bid-btn:hover { transform: translate(0, -5px); }
 .bid-btn:active { transform: scale(0.94); background: rgba(0, 120, 80, .8); }
 .bid-btn:focus-visible { outline: 3px solid #9affa7; }
@@ -321,6 +333,7 @@ button { font: inherit; color: inherit; }
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 14px rgba(0, 0, 0, 0.28);
   font-family: inherit;
 }
+
 .card.red { color: var(--suit-red); }
 .card.red .val { color: var(--suit-red); }
 
@@ -392,10 +405,12 @@ button { font: inherit; color: inherit; }
   transition: transform 0.16s ease, filter 0.16s ease;
   transform: translateY(0);
 }
+
 /* Overlap just enough that the whole hand always fits the screen width */
 .hand-card + .hand-card {
   margin-left: calc(-.6 * max(0px, (var(--n) * var(--hw) - 100cqw) / (var(--n) - 1)));
 }
+
 .hand-card.playable { transform: translateY(-8px); }
 .hand-card.playable::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 20px; }
 .hand-card.dim { filter: brightness(0.5); }
@@ -419,6 +434,7 @@ button { font: inherit; color: inherit; }
   will-change: transform;
   pointer-events: none;
 }
+
 .board-card[data-seat="west"]   { left: calc(50% - var(--slot-dx)); rotate: -4deg; }
 .board-card[data-seat="east"]   { left: calc(50% + var(--slot-dx)); rotate: 4deg; }
 .board-card[data-seat="north"]  { top: calc(50% - var(--slot-dy)); rotate: -3deg; }
@@ -426,17 +442,20 @@ button { font: inherit; color: inherit; }
 .board-card.is-winner {
   box-shadow: 0 0 8px 2px #fbbf2480, 0 0 10px 10px #24fbbd33;
 }
+
 .board-card.is-winner::before, .board-card.is-winner::after {
   content: "";
   inset: 0;
   position: absolute;
   z-index: -1;
 }
+
 .board-card.is-winner::before {
   background: linear-gradient(120deg, #b03bff 0%, #69adff 50%, #fbbf24 100%) border-box;
   border-radius: 8px;
   margin: -.125em;
 }
+
 .board-card.is-winner::after {
   background-color: #fff;
   border-radius: 4px;
@@ -459,6 +478,7 @@ button { font: inherit; color: inherit; }
   transition: opacity 0.2s ease, visibility 0s linear 0.2s;
   z-index: 50;
 }
+
 .layer.show { opacity: 1; visibility: visible; transition: opacity 0.2s ease; }
 .layer.full { position: fixed; z-index: 100; background: rgba(4, 8, 6, 0.88); overflow: auto; }
 
@@ -474,8 +494,9 @@ button { font: inherit; color: inherit; }
   transform: translateY(8px) scale(0.98);
   transition: transform 0.22s ease;
 }
+
 .layer.show .dialog { transform: none; }
-.dialog.wide { /*width: min(94vw, 560px); max-height: 94dvh;*/ overflow: auto; }
+.dialog.wide { overflow: auto; }
 
 .dialog h3 { margin: 0 0 6px; font-size: 21px; font-weight: 700; line-height: 1.25; }
 .dialog p { margin: 10px; font-size: 15px; line-height: 1.45; color: rgba(255, 255, 255, 0.72); }
@@ -493,6 +514,7 @@ button { font: inherit; color: inherit; }
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
   transition: filter 0.15s ease, transform 0.1s ease;
 }
+
 .btn:hover { filter: brightness(1.15); }
 .btn:active { transform: scale(0.97); }
 .btn:focus-visible { outline: 3px solid #22d3ee; outline-offset: 2px; }
@@ -502,7 +524,6 @@ button { font: inherit; color: inherit; }
 .sheet-title { margin-bottom: 4px; font-size: 24px; }
 .sheet-sub { margin-bottom: 14px; }
 .sheet-note { margin-bottom: 20px !important; font-size: 14px; color: #fbbf24; }
-
 .score-table { width: 100%; margin: 0 0 14px; border-collapse: separate; border-spacing: 0 10px; font-size: 15px; font-variant-numeric: tabular-nums; }
 .score-table th { padding: 12px 8px 4px; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-align: right; }
 .score-table td { padding: 12px 6px 4px; text-align: right; border-top: 1px solid rgba(255, 255, 255, 0.08); }
@@ -542,7 +563,9 @@ button { font: inherit; color: inherit; }
   pointer-events: none;
   transition: opacity 0.18s ease;
 }
+
 #tooltip.show { opacity: 1; }
+
 #tooltip::after {
   content: "";
   position: absolute;
@@ -562,10 +585,10 @@ button { font: inherit; color: inherit; }
     --bw: clamp(30px, min((var(--app-w) / 2 - var(--score-w) - 14px) / 1.45, 7.65vh), 50px);
     --hw: clamp(40px, (25vh - 54px) / 1.4, 100px); /* hand area is 25% of the height */
   }
+
   .scorecard { border-radius: 10px; }
   .scorecard .name { font-size: 12px; margin-bottom: 1px; }
   .scorecard p { font-size: 10.5px; line-height: 1.3; }
-  /*#table { inset: calc(var(--score-h) + 8px) calc(var(--score-w) + 12px); }*/
   .hand-title { padding: 8px 0 8px; font-size: 11px; }
   .bid-sub { display: none; }
   .bid-title { font-size: 15px; margin-bottom: 6px; }
@@ -600,6 +623,7 @@ button { font: inherit; color: inherit; }
   transform-origin: 80% 25%;
   transition: opacity 0.18s ease, transform 0.28s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
+
 .scorecard[data-zone="0"] .zone-badge,
 .scorecard[data-zone="1"] .zone-badge,
 .scorecard[data-zone="2"] .zone-badge { opacity: 1; transform: none; }
@@ -617,14 +641,14 @@ button { font: inherit; color: inherit; }
 
 #settings-btn {
   position: absolute;
-  top: var(--status-edge, 20px);
-  right: var(--status-edge, 20px);
+  top: var(--status-edge, 16px);
+  right: var(--status-edge, 16px);
   z-index: 6;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-height: 32px;
-  padding: 0 12px;
+  min-height: 34px;
+  padding: 0 14px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.28);
@@ -667,6 +691,7 @@ button { font: inherit; color: inherit; }
   padding: 14px 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .setting-stack { flex-direction: column; align-items: stretch; gap: 10px; }
 .setting-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .setting label, .setting-label { font-size: 16px; font-weight: 600; color: #fff; }
@@ -695,6 +720,7 @@ button { font: inherit; color: inherit; }
   cursor: pointer;
   transition: background 0.18s ease;
 }
+
 .switch-knob {
   position: absolute;
   top: 4px;
@@ -706,6 +732,7 @@ button { font: inherit; color: inherit; }
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   transition: transform 0.18s ease;
 }
+
 .switch[aria-checked="true"] { background: #2b9a66; padding: 0 40px 0 12px; text-align: left; color: #fff; }
 .switch[aria-checked="true"] .switch-knob { transform: translateX(46px); }
 .switch:focus-visible { outline: 3px solid #22d3ee; outline-offset: 2px; }
@@ -721,11 +748,13 @@ button { font: inherit; color: inherit; }
   appearance: none;
   cursor: pointer;
 }
+
 .level-slider::-webkit-slider-runnable-track {
   height: 8px;
   border-radius: 999px;
   background: linear-gradient(90deg, #2b50d6 var(--fill), rgba(255, 255, 255, 0.16) var(--fill));
 }
+
 .level-slider::-moz-range-track { height: 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.16); }
 .level-slider::-moz-range-progress { height: 8px; border-radius: 999px; background: #2b50d6; }
 .level-slider::-webkit-slider-thumb {
@@ -738,6 +767,7 @@ button { font: inherit; color: inherit; }
   background: #fff;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 }
+
 .level-slider::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5); }
 .level-slider:focus-visible { outline: 3px solid #22d3ee; outline-offset: 4px; border-radius: 999px; }
 .level-ticks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
@@ -748,8 +778,6 @@ button { font: inherit; color: inherit; }
   #settings-btn span { font-size: 13px; }
   .setting { padding: 5px 4px; }
   .setting-hint { display: none; }
-  /*#settings-dialog { padding: 8px 16px 10px; }*/
-  /*#settings-dialog .sheet-title { margin-bottom: 0; font-size: 17px; }*/
   .setting-stack { gap: 2px; }
   .level-slider { height: 28px; }
   .setting-value, #set-level-name { font-size: 17px; }
@@ -778,6 +806,7 @@ button { font: inherit; color: inherit; }
   line-height: 1;
   cursor: pointer;
 }
+
 #rules-btn:hover { background: rgba(0, 0, 0, 0.45); color: #fff; }
 #rules-btn:focus-visible { outline: 3px solid #22d3ee; outline-offset: 2px; }
 
@@ -791,6 +820,7 @@ button { font: inherit; color: inherit; }
   overflow: hidden;
   text-align: left;
 }
+
 #rules-dialog .sheet-title { flex: none; margin: 0; padding: 18px 20px 16px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 #rules-body {
   flex: 1 1 auto;
@@ -804,6 +834,7 @@ button { font: inherit; color: inherit; }
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
 }
+
 #rules-body::-webkit-scrollbar { width: 10px; }
 #rules-body::-webkit-scrollbar-track { background: transparent; }
 #rules-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 999px; border: 2px solid var(--panel); }
@@ -846,6 +877,7 @@ button { font: inherit; color: inherit; }
   font-size: 17px;
   letter-spacing: 0.04em;
 }
+
 #deal-btn[hidden] { display: none; }
 @media (max-height: 520px) {
   #deal-btn { min-height: 36px; min-width: 100px; padding: 0 26px; font-size: 14px; }
@@ -861,39 +893,58 @@ button { font: inherit; color: inherit; }
   overflow: visible;
   padding-bottom: calc(env(safe-area-inset-bottom) + 14px);
 }
+
 #book-layer .dialog {
   max-height: calc(100dvh - 16px);
   overflow: auto;
 }
 
-/* ---------- Opponents' face-down hands ----------
+/* ---------- Opponents face-down hands ----------
    Seven overlapping card backs per computer player, tucked behind the scorecard and mostly off the board edge.
    --opp-show = the fraction of each card that peeks onto the board (0.10-0.20). --opp-step = how far each card is offset from the last.
    The scorecards sit above these (z-index), so a scorecard can overlap its cards but cards never cover a scorecard.
    To add a card-back design later, set --back-art (for example: url("img/back.svg")) on :root. */
 
 :root {
-  --opp-show: 0.40;                               /* west / east: fraction of a card that always shows on the board */
-  --opp-show-n: 0.40;                             /* north: fraction of a card that shows (it hangs down from the top edge) */
-  --opp-step: 0.34;
-  --back-art: none;
+  --opp-scale: 1.2;
+  --opp-show: 0.40;
+  --opp-show-n: 0.40;
+  --opp-step: 0.3;
+  --back-tile: 0.3;
+  --back-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xml:space='preserve' width='71.656' height='53.213' viewBox='0 0 71.656 53.213'%3E%3Cpath fill='%23F0ACBC' d='M9.06.37a4 4 0 0 0 2.45 3.4c2.02.82 4.42.2 5.55-1.4a8 8 0 0 1-.72 2.46 9 9 0 0 1-1.8 2.41l.02.03h6.61l.04-.04a7.8 7.8 0 0 1-2.53-4.87c1.14 1.6 3.54 2.23 5.55 1.4A3.9 3.9 0 0 0 26.7 0H9.05zM3.32 20.94a7.8 7.8 0 0 1-2.54-4.88c1.15 1.6 3.54 2.23 5.56 1.4a3.9 3.9 0 0 0 2.45-3.4C8.94 12.55 7.93 10 4.52 10l.03.01a4 4 0 0 0-1.3.2c.62-.92 1-1.9.9-3.06a3.5 3.5 0 0 0-.6-1.75A4.1 4.1 0 0 0 .21 3.56H0v17.42h3.28zm19.09 2.52h.03a4 4 0 0 0-1.29.2c.61-.91 1-1.9.9-3.06a3.5 3.5 0 0 0-.61-1.75A4.1 4.1 0 0 0 18.1 17a4.2 4.2 0 0 0-3.18 1.13 3.6 3.6 0 0 0-1.23 2.57 4.7 4.7 0 0 0 .92 2.95 4 4 0 0 0-1.3-.2c-3.4 0-4.41 2.54-4.26 4.07a4 4 0 0 0 2.45 3.4c2.02.81 4.41.2 5.55-1.4a8 8 0 0 1-.72 2.46 9 9 0 0 1-1.8 2.4q0 .03.02.03h6.61l.04-.03a7.8 7.8 0 0 1-2.53-4.88c1.14 1.6 3.54 2.23 5.55 1.4a3.9 3.9 0 0 0 2.46-3.4c.14-1.52-.86-4.05-4.28-4.05M2.92 48.52a3.6 3.6 0 0 0 1.23-2.57q.04-1.35-.65-2.5-.12-.23-.27-.45a4 4 0 0 0 1.3.2c3.4 0 4.41-2.54 4.26-4.07a4 4 0 0 0-2.45-3.4c-2.02-.81-4.41-.2-5.55 1.4a8 8 0 0 1 .72-2.46 9 9 0 0 1 1.8-2.4l-.02-.04H0v17.42q1.64.02 2.92-1.13m19.5 1.08h.03a4 4 0 0 0-1.3.2c.62-.91 1-1.9.9-3.05a3.5 3.5 0 0 0-.61-1.76 4.1 4.1 0 0 0-3.32-1.84 4.2 4.2 0 0 0-3.2 1.13 3.6 3.6 0 0 0-1.21 2.57q-.03 1.35.64 2.5l.27.45a4 4 0 0 0-1.29-.2c-3.09 0-4.2 2.08-4.28 3.61H26.7c-.07-1.53-1.18-3.61-4.28-3.61M44.84.37a4 4 0 0 0 2.46 3.4c2.01.82 4.41.2 5.55-1.4a8 8 0 0 1-.72 2.46 9 9 0 0 1-1.81 2.41l.03.03h6.6q.03 0 .05-.04a7.8 7.8 0 0 1-2.54-4.87c1.15 1.6 3.54 2.23 5.56 1.4A3.9 3.9 0 0 0 62.49 0H44.83zM29.4 17.47c2.02.82 4.41.2 5.55-1.39a8 8 0 0 1-.72 2.46 9 9 0 0 1-1.8 2.4l.02.04h6.61l.04-.04a7.8 7.8 0 0 1-2.53-4.88c1.14 1.6 3.54 2.23 5.55 1.4a3.9 3.9 0 0 0 2.46-3.39c.15-1.53-.86-4.06-4.27-4.06h.03a4 4 0 0 0-1.3.2c.62-.91 1-1.9.9-3.06a3.5 3.5 0 0 0-.61-1.75 4.1 4.1 0 0 0-3.32-1.84 4.2 4.2 0 0 0-3.2 1.13 3.6 3.6 0 0 0-1.22 2.57q-.04 1.36.65 2.5.12.23.27.45-.55-.2-1.3-.2c-3.4 0-4.41 2.54-4.26 4.07a4 4 0 0 0 2.45 3.4m28.8 5.98h.03a4 4 0 0 0-1.3.2c.62-.91 1-1.9.9-3.06a3.5 3.5 0 0 0-.6-1.75A4.1 4.1 0 0 0 53.9 17a4.2 4.2 0 0 0-3.19 1.13 3.6 3.6 0 0 0-1.22 2.57q-.03 1.35.64 2.5l.27.45q-.55-.2-1.29-.2c-3.41 0-4.42 2.54-4.27 4.07a4 4 0 0 0 2.46 3.4c2 .81 4.4.2 5.54-1.4a8 8 0 0 1-.72 2.46 9 9 0 0 1-1.8 2.4q0 .03.02.03h6.61q.03 0 .04-.03a7.8 7.8 0 0 1-2.53-4.88c1.14 1.6 3.54 2.23 5.55 1.4a4 4 0 0 0 2.46-3.4c.15-1.52-.86-4.05-4.27-4.05M68.6 4.69a3.6 3.6 0 0 0-1.22 2.57q-.03 1.36.64 2.5l.28.45q-.57-.2-1.3-.2c-3.41 0-4.42 2.54-4.27 4.07a4 4 0 0 0 2.46 3.4c2.01.81 4.4.19 5.54-1.4a8 8 0 0 1-.72 2.46 9 9 0 0 1-1.8 2.4q0 .03.03.04h3.41V3.56a4.2 4.2 0 0 0-3.05 1.13M42.12 35.74c-2.01-.82-4.4-.2-5.54 1.39q.16-1.29.72-2.46a9 9 0 0 1 1.8-2.4q0-.03-.03-.04h-6.6l-.05.04a7.8 7.8 0 0 1 2.54 4.88c-1.14-1.6-3.54-2.23-5.55-1.4a3.9 3.9 0 0 0-2.46 3.39c-.15 1.53.86 4.07 4.27 4.07l-.03-.01a4 4 0 0 0 1.3-.2c-.62.92-1 1.9-.9 3.06q.07.96.6 1.75a4.1 4.1 0 0 0 3.33 1.84q1.8.12 3.19-1.13a3.6 3.6 0 0 0 1.22-2.57q.03-1.36-.64-2.5l-.27-.45q.55.2 1.29.2c3.41 0 4.42-2.54 4.27-4.07a4 4 0 0 0-2.46-3.4M58.2 49.6h.03a4 4 0 0 0-1.29.2c.61-.91 1-1.9.9-3.05a3.5 3.5 0 0 0-.61-1.76 4.1 4.1 0 0 0-3.33-1.84 4.2 4.2 0 0 0-3.19 1.13 3.6 3.6 0 0 0-1.22 2.57q-.03 1.35.64 2.5l.28.45q-.57-.19-1.3-.2c-3.08 0-4.2 2.08-4.28 3.61h17.65c-.06-1.53-1.18-3.61-4.28-3.61m10.05-17.37-.04.04a7.8 7.8 0 0 1 2.53 4.88c-1.14-1.6-3.54-2.23-5.55-1.4a3.9 3.9 0 0 0-2.46 3.39c-.14 1.53.86 4.06 4.27 4.06h-.03q.73 0 1.3-.2c-.61.91-1 1.9-.9 3.06q.07.96.61 1.75a4.1 4.1 0 0 0 3.68 1.84V32.23z'/%3E%3C/svg%3E");
 }
 
 .opp-hand {
-  --ow: var(--bw);                                /* card width (the short side) */
-  --oh: calc(var(--bw) * var(--ratio));           /* card height (the long side) */
+  --ow: calc(var(--bw) * var(--opp-scale));
+  --oh: calc(var(--bw) * var(--opp-scale) * var(--ratio));
+  overflow: hidden;
   position: absolute;
-  z-index: 0;
-  overflow: hidden;                               /* clips each fan to the part that shows */
   pointer-events: none;
+  z-index: 0;
 }
+
 .opp-hand .card-back {
-  position: absolute;
+  background: linear-gradient(135deg, #ff466c, #bf033c);
+  border: calc(var(--ow) * 0.04) solid #ff9bb3;
   border-radius: calc(var(--ow) * 0.1);
-  background: var(--back-art) center / cover no-repeat, linear-gradient(135deg, #1d3a8a, #12266f);
-  border: calc(var(--ow) * 0.06) solid #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
+  position: absolute;
+}
+
+.opp-hand .card-back::before {
+  content: "";
+  display: block;
+  background: var(--back-art) center / calc(var(--ow) * var(--back-tile)) auto repeat;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: color-dodge;
+  opacity: .5;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 /* North: the fan hangs from the top edge, centred on the scorecard. */
@@ -902,9 +953,10 @@ button { font: inherit; color: inherit; }
   width: calc(var(--ow) + (var(--n) - 1) * var(--ow) * var(--opp-step));
   height: calc(var(--oh) * var(--opp-show-n));
 }
+
 .opp-hand[data-seat="north"] .card-back {
   width: var(--ow); height: var(--oh);
-  bottom: 0;                                    /* bottom edge of each card lines up with the box; the rest is clipped above it */
+  bottom: 0;  /* bottom edge of each card lines up with the box; the rest is clipped above it */
   left: calc(var(--i) * var(--ow) * var(--opp-step));
 }
 
@@ -917,11 +969,13 @@ button { font: inherit; color: inherit; }
   width: calc(var(--oh) * var(--opp-show) + var(--opp-ext));
   height: calc(var(--ow) + (var(--n) - 1) * var(--ow) * var(--opp-step));
 }
+
 .opp-hand[data-seat="west"] { left: calc(var(--opp-ext) * -1); }
 .opp-hand[data-seat="east"] { right: calc(var(--opp-ext) * -1); }
 .opp-hand[data-seat="west"] .card-back, .opp-hand[data-seat="east"] .card-back {
   width: var(--oh); height: var(--ow);
   top: calc(var(--i) * var(--ow) * var(--opp-step));
 }
-.opp-hand[data-seat="west"] .card-back { right: 0; }   /* the rest of the card is clipped on the left */
-.opp-hand[data-seat="east"] .card-back { left: 0; }    /* the rest is clipped on the right */
+
+.opp-hand[data-seat="west"] .card-back { right: 0; }  /* the rest of the card is clipped on the left */
+.opp-hand[data-seat="east"] .card-back { left: 0; }   /* the rest is clipped on the right */
