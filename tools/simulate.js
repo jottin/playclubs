@@ -1,6 +1,6 @@
 /*
  * Plays many full games with the AI and reports how the assigned safe zones behave.
- * Usage: node tools/simulate.js [--games 6000]
+ * Usage: node tools/simulate.js [--games 6000] [--random 0]   (--random N: N random legal plays per computer player per round, as in Beginner)
  */
 'use strict';
 const R = require('../js/rules.js');
@@ -9,6 +9,7 @@ const { playGame } = require('./sim-core.js');
 const args = {};
 for (let i = 2; i < process.argv.length; i += 2) args[process.argv[i].replace(/^--/, '')] = Number(process.argv[i + 1]);
 const GAMES = args.games || 6000;
+const RANDOM = args.random || 0; // Beginner-style random plays per computer player per round (default 0: the plain odds-based player)
 const pct = (x) => (100 * x).toFixed(1) + '%';
 
 const slots = {}; // 'none' | 0 | 1 | 2 -> { n, points, hit }
@@ -21,7 +22,7 @@ for (let g = 0; g < GAMES; g++) {
     const c = (slots[key] = slots[key] || { n: 0, points: 0, hit: 0 });
     c.n++; c.points += r.points; if (r.kind === 'bonus') c.hit++;
     rounds++; clubSum += r.clubs; if (r.clubs === 0) zeroClubs++;
-  });
+  }, RANDOM);
   const ranked = R.rankPlayers(st.gamePoints);
   const top = ranked.filter((x) => x.place === 1);
   if (top.length > 1) tie++;

@@ -17,8 +17,9 @@ function makeRng(seed) {
   };
 }
 
-function playGame(seed, onRound) {
-  const g = E.createGame({ rng: makeRng(seed) });
+// `randomPlays` is the Beginner level's random plays per computer player per round; 0 (the default here) measures the plain odds-based player.
+function playGame(seed, onRound, randomPlays) {
+  const g = E.createGame({ rng: makeRng(seed), randomPlays: randomPlays || 0 });
   while (g.state.phase !== 'game-over') {
     g.startRound();
     while (g.state.phase === 'playing') {
