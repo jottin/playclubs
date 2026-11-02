@@ -373,6 +373,20 @@
     card.classList.add('receive');
   };
 
+  // Face-down hand of a computer player, drawn behind its scorecard. n = cards left (0 empties it).
+  UI.setOppHand = function (seat, n) {
+    const box = document.querySelector('.opp-hand[data-seat="' + seat + '"]');
+    if (!box) return;
+    box.style.setProperty('--n', Math.max(n, 1));
+    while (box.children.length > n) box.lastChild.remove();
+    while (box.children.length < n) {
+      const c = document.createElement('div');
+      c.className = 'card-back';
+      c.style.setProperty('--i', box.children.length);
+      box.appendChild(c);
+    }
+  };
+
   UI.clearBoard = function () {
     els.boardCards.innerHTML = '';
     zCounter = 1;

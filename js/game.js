@@ -74,6 +74,7 @@
     await UI.sleep(650 + Math.random() * 350); // a moment of "thinking"
     const card = game.aiPick(seat);
     const out = game.play(seat, card.id);
+    UI.setOppHand(seat, game.state.hands[seat].length);
     await UI.placeCard(seat, card);
     return out;
   }
@@ -147,6 +148,7 @@
     UI.clearBoard();
     UI.clearZones();
     UI.renderHand(s.hands.dealer);
+    ['west', 'north', 'east'].forEach((seat) => UI.setOppHand(seat, s.hands[seat].length));
     UI.markHand(null);
     UI.setStatus({ round: 'Round ' + (s.roundIndex + 1) + ' of ' + s.totalRounds, lead: 'Dealing\u2026' });
     await UI.sleep(600);
