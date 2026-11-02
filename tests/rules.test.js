@@ -349,14 +349,15 @@ test('player names show up in the scorecards, book dialogs and scoreboards, and 
   assert.equal(R.SEAT_TITLE.east, 'Player East');
 });
 
-test('Hard Mode off = Medium (4 rounds), on = Hard (8 rounds, looks ahead)', () => {
+test('Expert Mode off = Beginner (4 rounds, random plays), on = Expert (8 rounds, looks ahead)', () => {
   assert.deepEqual(R.LEVELS.map((l) => l.rounds), [4, 8]);
-  assert.deepEqual(R.LEVELS.map((l) => l.label), ['Medium', 'Hard']);
+  assert.deepEqual(R.LEVELS.map((l) => l.label), ['Beginner', 'Expert']);
   assert.equal(R.levelInfo(undefined).id, R.DEFAULT_LEVEL);
-  assert.equal(R.levelFor(false).label, 'Medium');
-  assert.equal(R.levelFor(true).label, 'Hard');
+  assert.equal(R.levelFor(false).label, 'Beginner');
+  assert.equal(R.levelFor(true).label, 'Expert');
   assert.ok(R.LEVELS.every((l) => l.mistakes === 0), 'no level makes deliberate mistakes any more');
-  assert.ok(!R.LEVELS[0].search && R.LEVELS[1].search > 0, 'only Hard looks ahead');
+  assert.ok(!R.LEVELS[0].search && R.LEVELS[1].search > 0, 'only Expert looks ahead');
+  assert.deepEqual(R.LEVELS.map((l) => l.randomPlays), [1, 0], 'Beginner plays one random card per round, Expert none');
   [1, 2].forEach((lv) => {
     const g = createGame({ rng: mulberry32(40 + lv), level: lv });
     assert.equal(g.state.totalRounds, 4 * lv);
@@ -427,4 +428,54 @@ test('totals always stay between 1 and 199 over full games', () => {
       R.SEATS.forEach((seat) => assert.ok(g.state.gamePoints[seat] >= 1 && g.state.gamePoints[seat] <= 199));
     }
   }
+});
+
+test('Beginner: every computer player makes the planned random legal plays each round; the human seat and Expert make none', () => {
+  function playRound(g, onPick) {
+    g.startRound();
+    while (g.state.phase === 'playing') {
+      while (g.state.phase === 'playing' && g.state.book.length < 4) {
+        const seat = g.state.turn;
+        const planned = g.state.randomBooks[seat] && g.state.randomBooks[seat].has(g.state.bookNumber);
+        const card = g.aiPick(seat);
+        assert.ok(g.legalCards(seat).some((c) => c.id === card.id), 'every pick is a legal play, random or not');
+        onPick(seat, planned);
+        g.play(seat, card.id);
+      }
+      g.completeBook();
+    }
+    g.finishRound();
+  }
+  const beginner = createGame({ rng: mulberry32(8), level: 1 });
+  while (beginner.state.phase !== 'game-over') {
+    const seen = { west: 0, north: 0, east: 0, dealer: 0 };
+    playRound(beginner, (seat, planned) => { if (planned) seen[seat]++; });
+    assert.deepEqual(seen, { west: 1, north: 1, east: 1, dealer: 0 }, 'one random play per computer player, none for the dealer seat');
+  }
+  const expert = createGame({ rng: mulberry32(9), level: 2 });
+  let any = 0;
+  playRound(expert, (seat, planned) => { if (planned) any++; });
+  assert.equal(any, 0, 'Expert never plays at random');
+  const override = createGame({ rng: mulberry32(10), level: 1, randomPlays: 0 });
+  playRound(override, (seat, planned) => { if (planned) any++; });
+  assert.equal(any, 0, 'the simulators can switch the random plays off');
+});
+
+test('Expert Mode setting: saved Hard Mode settings carry over, and the mode picks the level', () => {
+  const store = {};
+  global.window = { localStorage: { getItem: (k) => store[k] || null, setItem: (k, v) => { store[k] = v; } } };
+  global.window.ClubsRules = R;
+  const load = () => { delete require.cache[require.resolve('../js/settings.js')]; require('../js/settings.js'); return global.window.ClubsSettings; };
+  let S = load();
+  assert.equal(S.get().expertMode, false, 'Beginner is the default');
+  assert.equal(S.get().level, 1);
+  assert.equal(S.rounds(), 4);
+  S.set({ expertMode: true });
+  assert.equal(S.get().level, 2);
+  assert.equal(S.rounds(), 8);
+  store['clubs.settings.v1'] = JSON.stringify({ confirmBooks: false, sound: true, hardMode: true });
+  S = load();
+  assert.equal(S.get().expertMode, true, 'a saved Hard Mode becomes Expert Mode');
+  assert.equal(S.get().confirmBooks, false);
+  delete global.window;
 });
