@@ -936,6 +936,7 @@ button { font: inherit; color: inherit; }
   content: "";
   display: block;
   background: var(--back-art) center / calc(var(--ow) * var(--back-tile)) auto repeat;
+  border-radius: calc(var(--ow) * 0.05);
   width: 100%;
   height: 100%;
   mix-blend-mode: color-dodge;
