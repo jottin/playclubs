@@ -142,8 +142,8 @@
 
         <div class="setting">
           <div class="setting-text">
-            <label id="set-confirm-label" for="set-confirm">Book Confirmation</label>
-            <span class="setting-hint">Show a dialog after every book is played</span>
+            <label id="set-confirm-label" for="set-confirm">Confirmation and Tips</label>
+            <span class="setting-hint">Show book confirmation and card tooltips during gameplay.</span>
           </div>
           <button id="set-confirm" class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="set-confirm-label">
             <span class="switch-state">On</span><span class="switch-knob"></span>
@@ -162,10 +162,10 @@
 
         <div class="setting">
           <div class="setting-text">
-            <label id="set-hard-label" for="set-hard">Hard Mode</label>
+            <label id="set-expert-label" for="set-expert">Expert Mode</label>
             <span class="setting-hint">Increase difficulty and rounds played.</span>
           </div>
-          <button id="set-hard" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="set-hard-label">
+          <button id="set-expert" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="set-expert-label">
             <span class="switch-state">Off</span><span class="switch-knob"></span>
           </button>
         </div>
@@ -236,9 +236,9 @@
           <h4>6. Game options</h4>
           <p>The Settings button opens these options.</p>
           <ul>
-            <li><b>Book confirmation:</b> on, a dialog appears after every book saying who won it and why. Off skips it.</li>
+            <li><b>Confirmation and Tips:</b> on by default. A dialog appears after every book saying who won it and why, and short tooltips appear when you tap a card out of turn or one that does not follow the leading suit. Off skips both.</li>
             <li><b>Sound effects:</b> turn the card sounds on or off.</li>
-            <li><b>Hard Mode:</b> off by default, and a game is 4 rounds against computer players that play toward their own zone using the odds. On, the computer players also look ahead and a game is 8 rounds. Zones and leaders keep rotating the same way. Turning Hard Mode on restarts the game when you close Settings; turning it off applies to the computer players at once, and the 4-round length starts with the next game.</li>
+            <li><b>Expert Mode:</b> off by default (Beginner Mode). Beginner games are 4 rounds, and each computer player also plays one random card in every round, so they are easier to beat while you learn. Expert Mode is 8 rounds, with no random plays: the computer players play toward their own zone by looking ahead at the odds, which can make their turns a little slower. Changing the mode restarts the game when you close Settings.</li>
           </ul>
         </div>
 

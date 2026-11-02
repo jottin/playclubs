@@ -22,7 +22,7 @@ npm run build:single   # writes dist/clubs.html, one self-contained file
 index.html        page structure + SVG suit icons
 css/styles.css    all styling; layout sizes come from the variables at the top
 js/rules.js       pure rules: deck, dealing, follow-suit, book winner, zone rotation, scoring, rankings
-js/settings.js    player settings (book confirmation, difficulty) saved in localStorage
+js/settings.js    player settings (confirmation and tips, sound, Expert Mode) saved in localStorage
 js/sound.js       sound effects made live with Web Audio (no audio files)
 js/ai.js          opponent card choice (plays toward the safe zone it was issued)
 js/engine.js      game state machine (rounds, safe zones, books, leaders). No DOM.
@@ -58,7 +58,7 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
    round out with no zone. Zones show on every scorecard ("Zone 3-4 - Won: 1"). Only the four-player game is defined
    so far (`zonesForRound` in `rules.js`); 3 and 5 players are still to be decided.
 5. **Scoring (Milestone 6).** Every club you win is worth 10 points. Everyone starts the game on 100 points; the highest
-   total after the last round wins (4 rounds, or 8 with Hard Mode, see Settings). Rewards grow as the zone gets harder to hit:
+   total after the last round wins (4 rounds, or 8 with Expert Mode, see Settings). Rewards grow as the zone gets harder to hit:
    - Zone **0-2**: finish with no clubs **+20**, or with 1 or 2 clubs **+10**.
    - Zone **3-4**: finish with 3 or 4 clubs **+30**.
    - Zone **5-6**: finish with 5 or 6 clubs **+50**. (M9: 7 clubs now misses the zone and costs 70.)
@@ -105,19 +105,19 @@ bottom-left. To move any item to a corner, add one class to its div in `index.ht
 The "Settings" button (top-right of the board, `#settings-btn`) opens a dialog (`#settings-layer`); the game pauses while it is open.
 Close with the button, Esc or a tap outside. Values are saved in localStorage (`js/settings.js`) when the browser allows it.
 
-- **Book Confirmation** (on/off switch): off skips the dialog after each book; the cards just pause, then slide to the winner.
-- **Hard Mode** (on/off switch, off by default) sets how well the computer players play and how long a game is (`LEVELS` in `rules.js`).
-  Off = **Medium**: 4 rounds (1 game); the computer plays toward its own safe zone using the odds (the opponent of milestones 1-9).
-  On = **Hard**: 8 rounds (2 games); the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
-  cards 60 random ways, plays the round out and keeps the card with the best average score. About 20 points a game better than Medium
-  in self-play. The old Easy level (random mistakes) and the 12-round game were removed; `mistakes` is still supported by the engine.
+- **Confirmation and Tips** (on/off switch): shows the dialog after each book and the two hand-area tooltips ("Please wait for your turn." and the follow-suit message). Off skips the dialog (the cards just pause, then slide to the winner) and hides both tooltips. It is independent of the mode.
+- **Expert Mode** (on/off switch, off by default) picks the mode (`LEVELS` in `rules.js`; `levelFor(expertMode)`).
+  Off = **Beginner**: 4 rounds (1 game). The computer plays toward its own safe zone using the odds, but each computer player also makes
+  `randomPlays` (1) random legal play(s) per round, at a book it does not announce, so a new player can beat it. The human dealer seat is never affected.
+  On = **Expert**: 8 rounds (2 games), no random plays; the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
+  cards 60 random ways, plays the round out and keeps the card with the best average score. Ties are allowed in both modes.
   Zones and leaders keep rotating every round. Games longer than 4 rounds show one column per 4-round game (G1, G2) on the final scoreboard.
-  - Turning Hard Mode **on** shows a bold note ("Enabling Hard Mode will restart the game. Press the close button to continue.") and the
-    game restarts when the dialog closes (the page reloads; the setting is saved first), at Round 1 of 8. Switching it on and back off
-    before closing does nothing.
-  - Turning it **off** mid-game applies to the computer players at once, but the game in progress keeps its 8 rounds (a note says so);
-    the 4-round length starts with the next game.
-  - Settings saved by older builds (slider levels 1-3) are migrated: Hard (3) becomes Hard Mode on; Easy and Medium become off.
+  - Changing the switch shows a bold note ("Enabling Expert Mode will restart the game at 8 rounds. Press the close button to continue." or
+    "Disabling Expert Mode will restart the game at 4 rounds. ...") and the game restarts when the dialog closes (the page reloads; the setting is saved first).
+    Switching it back before closing does nothing.
+  - To make Beginner stronger or weaker, change `randomPlays` in `LEVELS[0]` (0 = none, 2 = more). In 2000 simulated games a careful player won about 27% at 1
+    (25% is even) and about 32% at 2.
+  - Settings saved by older builds are migrated: Hard Mode on (or old slider level 3) becomes Expert Mode on; everything else becomes off.
 
 ## Rules dialog (9)
 
@@ -147,7 +147,7 @@ edit its recipe or `Sound.LEVEL` / `Sound.TRIM` in `sound.js`. `sounds-preview/*
 
 ## Simulator and AI
 
-`node tools/simulate.js` plays thousands of full games and reports, for each slot, the average points per round and
+`node tools/simulate.js [--games N] [--random N]` (`--random` = random plays per computer player per round, as in Beginner) plays thousands of full games and reports, for each slot, the average points per round and
 how often the zone is hit, plus the spread of final scores, ties and seat fairness. The AI plays each card toward
 its zone (or just avoids clubs with none) and ignores everyone else's. Measured with 8000 games, average points
 per round: 0-2 -0.5 (hit 71%), 3-4 -2.0 (hit 33%), 5+ -1.8 (hit 13%), no zone -13.7 (these were measured before M7's x10 scoring and the 5-6 change). With the 5-6 zone (3000 games, points per
@@ -156,7 +156,7 @@ feels too harsh, raise its `reward` in `ZONES` (`rules.js`). With the 100-point 
 (110 without the cap), a tie for first about 15%, and each seat wins about a quarter of the games. A player is sent
 back from 0 about 0.4 times per 4-round game (about 1.2 per 8-round game) and back from 200 only about once in 25 games.
 In comparison tests (computer players unaware of the cap), the player in last place at halfway went on to win
-5.7% of 4-round games (2.3% without the cap) and 11.8% of 8-round games (2.8% without; Medium AI used for those).
+5.7% of 4-round games (2.3% without the cap) and 11.8% of 8-round games (2.8% without; odds-based computer players used for those).
 
 ## Next steps toward iPhone / Android
 
