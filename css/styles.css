@@ -865,3 +865,63 @@ button { font: inherit; color: inherit; }
   max-height: calc(100dvh - 16px);
   overflow: auto;
 }
+
+/* ---------- Opponents' face-down hands ----------
+   Seven overlapping card backs per computer player, tucked behind the scorecard and mostly off the board edge.
+   --opp-show = the fraction of each card that peeks onto the board (0.10-0.20). --opp-step = how far each card is offset from the last.
+   The scorecards sit above these (z-index), so a scorecard can overlap its cards but cards never cover a scorecard.
+   To add a card-back design later, set --back-art (for example: url("img/back.svg")) on :root. */
+
+:root {
+  --opp-show: 0.40;                               /* west / east: fraction of a card that always shows on the board */
+  --opp-show-n: 0.40;                             /* north: fraction of a card that shows (it hangs down from the top edge) */
+  --opp-step: 0.34;
+  --back-art: none;
+}
+
+.opp-hand {
+  --ow: var(--bw);                                /* card width (the short side) */
+  --oh: calc(var(--bw) * var(--ratio));           /* card height (the long side) */
+  position: absolute;
+  z-index: 0;
+  overflow: hidden;                               /* clips each fan to the part that shows */
+  pointer-events: none;
+}
+.opp-hand .card-back {
+  position: absolute;
+  border-radius: calc(var(--ow) * 0.1);
+  background: var(--back-art) center / cover no-repeat, linear-gradient(135deg, #1d3a8a, #12266f);
+  border: calc(var(--ow) * 0.06) solid #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+/* North: the fan hangs from the top edge, centred on the scorecard. */
+.opp-hand[data-seat="north"] {
+  top: 0; left: 50%; translate: -50% 0;
+  width: calc(var(--ow) + (var(--n) - 1) * var(--ow) * var(--opp-step));
+  height: calc(var(--oh) * var(--opp-show-n));
+}
+.opp-hand[data-seat="north"] .card-back {
+  width: var(--ow); height: var(--oh);
+  bottom: 0;                                    /* bottom edge of each card lines up with the box; the rest is clipped above it */
+  left: calc(var(--i) * var(--ow) * var(--opp-step));
+}
+
+/* West and east: the fans come in from the side edges, cards turned sideways (long side points into the board).
+   On a screen wider than the board column (1180px) the felt continues past the board edge, so the fan spills into that
+   margin instead of being cut off: --opp-ext is the margin available, capped at the part of a card that would be hidden. */
+.opp-hand[data-seat="west"], .opp-hand[data-seat="east"] {
+  --opp-ext: min((100vw - var(--app-w)) / 2, var(--oh) * (1 - var(--opp-show)));
+  top: 50%; translate: 0 -50%;
+  width: calc(var(--oh) * var(--opp-show) + var(--opp-ext));
+  height: calc(var(--ow) + (var(--n) - 1) * var(--ow) * var(--opp-step));
+}
+.opp-hand[data-seat="west"] { left: calc(var(--opp-ext) * -1); }
+.opp-hand[data-seat="east"] { right: calc(var(--opp-ext) * -1); }
+.opp-hand[data-seat="west"] .card-back, .opp-hand[data-seat="east"] .card-back {
+  width: var(--oh); height: var(--ow);
+  top: calc(var(--i) * var(--ow) * var(--opp-step));
+}
+.opp-hand[data-seat="west"] .card-back { right: 0; }   /* the rest of the card is clipped on the left */
+.opp-hand[data-seat="east"] .card-back { left: 0; }    /* the rest is clipped on the right */
