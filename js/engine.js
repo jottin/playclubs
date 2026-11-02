@@ -22,6 +22,8 @@
     const opts = options || {};
     const rng = opts.rng || Math.random;
     let level = R.levelInfo(opts.level);
+    // How many random legal plays each computer player makes per round (Beginner: 1). `opts.randomPlays` overrides the level (simulators).
+    const randomPlaysPerRound = () => (typeof opts.randomPlays === 'number' ? opts.randomPlays : level.randomPlays || 0);
 
     const state = {
       roundIndex: -1,
@@ -40,6 +42,7 @@
       gamePoints: filled(R.START_POINTS),
       history: [], // one entry per finished round: { clubs, zones, points, kinds, before, bounces }
       lastResult: null,
+      randomBooks: {}, // seat -> Set of book numbers (0-6) at which that computer player plays a random legal card this round
     };
 
     function startRound() {
@@ -56,6 +59,14 @@
       // Safe zones are issued, not chosen, and the pattern rotates one seat clockwise each round.
       state.zones = R.zonesForRound(state.roundIndex);
       state.phase = 'playing';
+      // Beginner: each computer player (never the human dealer seat) plays a random legal card at a few unannounced books.
+      state.randomBooks = {};
+      const n = Math.min(randomPlaysPerRound(), R.BOOKS_PER_ROUND);
+      R.SEATS.filter((seat) => seat !== 'dealer').forEach((seat) => {
+        const set = new Set();
+        while (set.size < n) set.add(Math.floor(rng() * R.BOOKS_PER_ROUND));
+        state.randomBooks[seat] = set;
+      });
       return state;
     }
 
@@ -128,6 +139,12 @@
 
     // The AI plays toward its safe zone (or just avoids clubs when it has none). `extra` can override the AI context.
     function aiPick(seat, extra) {
+      // A planned random play (Beginner): any legal card, chosen at random.
+      const planned = state.randomBooks[seat];
+      if (planned && planned.has(state.bookNumber)) {
+        const legal = legalCards(seat);
+        return legal[Math.floor(rng() * legal.length)];
+      }
       const base = {
         hand: state.hands[seat],
         book: state.book,
@@ -139,7 +156,7 @@
       };
       const o = Object.assign({}, level, extra); // `extra` can override the level (used by the simulators)
       if (o.search) {
-        // Hard: look ahead over simulated deals. All the cards in play and every player's zone are public.
+        // Expert: look ahead over simulated deals. All the cards in play and every player's zone are public.
         const handSizes = {};
         R.SEATS.forEach((x) => (handSizes[x] = state.hands[x].length));
         return AI.chooseCardSearch({

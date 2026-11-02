@@ -153,7 +153,7 @@
   }
 
   /*
-   * Hard level: look ahead instead of just estimating. For each legal card, deal the unseen cards to the other
+   * Expert level: look ahead instead of just estimating. For each legal card, deal the unseen cards to the other
    * players at random (a few dozen times), play the rest of the round out with chooseCard for everyone, and keep the
    * card whose finished round scores best for this player on average. All cards are tried on the same deals.
    *

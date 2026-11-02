@@ -45,22 +45,26 @@
   const BOOKS_PER_ROUND = CARDS_PER_PLAYER;
   const ROUNDS = 4; // every player leads one round (and holds each zone once); this is one "game"
 
-  // Difficulty levels. The Settings dialog has one switch, Hard Mode: off = Medium, on = Hard.
-  //   Medium  1 game (4 rounds). Plays toward its own safe zone using the odds (the computer player of milestones 1-9).
-  //   Hard    2 games (8 rounds). search: 60. Looks ahead: for every legal card it deals the unseen cards 60 random ways,
-  //           plays the round out, and picks the card that scores best on average. About 20 points a game better than Medium.
-  // (`mistakes` is the chance a computer player plays a random legal card; the old Easy level used 0.25. No level uses it now,
-  // but the engine and simulators still support it.)
+  // Difficulty levels. The Settings dialog has one switch, Expert Mode: off = Beginner (the default), on = Expert.
+  //   Beginner  1 game (4 rounds). Plays toward its own safe zone using the odds, but every computer player also plays one
+  //             random legal card at a random book in every round (randomPlays: 1), so the opponents are beatable and a
+  //             new player can learn the game. (Simulated: a careful player wins about 27% against the same look-ahead-free
+  //             opponents with 1 random play, about 32% with 2.)
+  //   Expert    2 games (8 rounds). search: 60. Never plays at random. Looks ahead: for every legal card it deals the unseen
+  //             cards 60 random ways, plays the round out, and picks the card that scores best on average. About 20 points
+  //             a game better than the odds-only player.
+  // (`mistakes` is the chance a computer player plays a random legal card on any turn; the old Easy level used 0.25. No level
+  // uses it now, but the engine and simulators still support it.)
   const LEVELS = [
-    { id: 1, label: 'Medium', games: 1, rounds: ROUNDS, mistakes: 0, search: 0 },
-    { id: 2, label: 'Hard', games: 2, rounds: ROUNDS * 2, mistakes: 0, search: 60 },
+    { id: 1, label: 'Beginner', games: 1, rounds: ROUNDS, mistakes: 0, search: 0, randomPlays: 1 },
+    { id: 2, label: 'Expert', games: 2, rounds: ROUNDS * 2, mistakes: 0, search: 60, randomPlays: 0 },
   ];
   const DEFAULT_LEVEL = 1;
   function levelInfo(id) {
     return LEVELS.find((l) => l.id === id) || LEVELS[DEFAULT_LEVEL - 1];
   }
-  function levelFor(hardMode) {
-    return hardMode ? LEVELS[1] : LEVELS[0];
+  function levelFor(expertMode) {
+    return expertMode ? LEVELS[1] : LEVELS[0];
   }
 
   function makeCard(suit, rank) {

@@ -90,9 +90,9 @@
     const S = window.ClubsSettings;
     const confirmSw = $('#set-confirm');
     const soundSw = $('#set-sound');
-    const hardSw = $('#set-hard');
+    const expertSw = $('#set-expert');
     const note = $('#set-note');
-    let hardAtOpen = false; // Hard Mode as it was when the dialog opened
+    let expertAtOpen = false; // Expert Mode as it was when the dialog opened
 
     function renderSwitch(sw, on) {
       sw.setAttribute('aria-checked', String(on));
@@ -102,21 +102,23 @@
       const v = S.get();
       renderSwitch(confirmSw, v.confirmBooks);
       renderSwitch(soundSw, v.sound);
-      renderSwitch(hardSw, v.hardMode);
-      // Turning Hard Mode on restarts the game when the dialog closes (below), so say so, in bold.
-      const restart = v.hardMode && !hardAtOpen;
+      renderSwitch(expertSw, v.expertMode);
+      // Changing the mode restarts the game when the dialog closes (below), so say so, in bold. Switching it and back again does nothing.
+      const restart = v.expertMode !== expertAtOpen;
       note.classList.toggle('is-strong', restart);
-      note.textContent = restart
-        ? 'Enabling Hard Mode will restart the game. Press the close button to continue.'
-        : UI.settingsNote ? UI.settingsNote(v) : '';
+      note.textContent = !restart
+        ? ''
+        : v.expertMode
+          ? 'Enabling Expert Mode will restart the game at ' + R.levelFor(true).rounds + ' rounds. Press the close button to continue.'
+          : 'Disabling Expert Mode will restart the game at ' + R.levelFor(false).rounds + ' rounds. Press the close button to continue.';
     }
     const dlg = wireDialog('#settings-layer', '#settings-btn', '#settings-close', () => {
-      hardAtOpen = S.get().hardMode;
+      expertAtOpen = S.get().expertMode;
       render();
     }, () => {
-      // Closed with Hard Mode switched on: start over as a fresh 8-round game. The setting is already saved, so a reload
-      // is the cleanest restart (it drops every timer and animation of the game in progress and lands on the Deal button).
-      if (S.get().hardMode && !hardAtOpen) window.location.reload();
+      // Closed with the mode changed (either way): start over as a fresh game in the new mode. The setting is already saved, so a
+      // reload is the cleanest restart (it drops every timer and animation of the game in progress and lands on the Deal button).
+      if (S.get().expertMode !== expertAtOpen) window.location.reload();
     });
     UI.openSettings = dlg.open;
     UI.closeSettings = dlg.close;
@@ -126,7 +128,7 @@
       S.set({ sound: !S.get().sound });
       if (S.get().sound && window.ClubsSound) window.ClubsSound.play('phip'); // a sample click when turned on
     });
-    hardSw.addEventListener('click', () => S.set({ hardMode: !S.get().hardMode }));
+    expertSw.addEventListener('click', () => S.set({ expertMode: !S.get().expertMode }));
     S.onChange(render);
 
     // Rules: the long text scrolls inside the dialog; the title and Close button stay put.
