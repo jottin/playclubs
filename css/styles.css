@@ -673,7 +673,7 @@ button { font: inherit; color: inherit; }
 .setting-text { display: flex; flex-direction: column; gap: 2px; }
 .setting-hint { font-size: 13px; color: var(--muted); }
 .setting-value, #set-level-name { font-size: 20px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
-.setting-note { font-size: 13px; font-weight: 700; min-height: 0; margin: .5em 0 1.5em; padding: 0 .5em; opacity: 1; transition: all .2s ease; text-align: center; }
+.setting-note { font-size: 13px; font-weight: 700; min-height: 0; margin-bottom: 20px !important; padding: 0 .5em; opacity: 1; transition: all .2s ease; text-align: center; }
 .setting-note:empty { opacity: 0; }
 .setting-note.is-strong { color: #fbbf24; }
 
