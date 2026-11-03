@@ -15,6 +15,10 @@
   const N = window.ClubsNames;
   const Settings = window.ClubsSettings;
 
+  // Pace of play (1 = the original speed; smaller = faster).
+  const PACE = 0.75;       // the computer players' "thinking" pause before each card (25% shorter)
+  const BOOK_PAUSE = 0.5;  // the pauses between the fourth card of a book and the pile sliding away (halved)
+
   const params = new URLSearchParams(window.location.search);
   const AUTO = params.get('auto') === '1';
   if (params.get('fast') === '1') {
@@ -71,7 +75,7 @@
   }
 
   async function opponentTurn(seat) {
-    await UI.sleep(650 + Math.random() * 350); // a moment of "thinking"
+    await UI.sleep((650 + Math.random() * 350) * PACE); // a moment of "thinking"
     const card = game.aiPick(seat);
     const out = game.play(seat, card.id);
     UI.setOppHand(seat, game.state.hands[seat].length);
@@ -92,14 +96,14 @@
     UI.setActive(null);
     UI.markWinner(last.result.winningCard.id); // the winning card gets .is-winner until the book is collected
 
-    await UI.sleep(1000); // 1s after the fourth card, then the confirmation dialog
+    await UI.sleep(1000 * BOOK_PAUSE); // after the fourth card, then the confirmation dialog
     if (Settings.get().confirmBooks) {
       const dialog = UI.showBookDialog(last.message.title, last.message.text);
       if (AUTO) setTimeout(() => document.getElementById('book-continue').click(), 250 * UI.timeScale + 5);
       await dialog;
-      await UI.sleep(500); // 0.5s after Continue, then the cards gather and slide to the winner
+      await UI.sleep(500 * BOOK_PAUSE); // after Continue, then the cards gather and slide to the winner
     } else {
-      await UI.sleep(900); // Book Confirmation is off: a short look at the cards, then they slide to the winner
+      await UI.sleep(900 * BOOK_PAUSE); // Confirmation and Tips is off: a short look at the cards, then they slide to the winner
     }
     const done = game.completeBook();
     await UI.collectBook(done.winner);

@@ -25,7 +25,8 @@
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     return UI.timeScale * (reduce ? 0.3 : 1);
   }
-  const dur = (ms) => Math.max(1, ms * motionScale());
+  const SLIDE = 0.75; // card slide animations take 75% of their original time (25% faster)
+  const dur = (ms) => Math.max(1, ms * SLIDE * motionScale());
   // The game's waits stop while the Settings dialog is open (UI.sleep resolves only once it closes).
   let pauseGate = null;
   UI.sleep = (ms) =>
