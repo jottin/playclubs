@@ -16,8 +16,8 @@
   const Settings = window.ClubsSettings;
 
   // Pace of play (1 = the original speed; smaller = faster).
-  const PACE = 0.75;       // the computer players' "thinking" pause before each card (25% shorter)
-  const BOOK_PAUSE = 0.5;  // the pauses between the fourth card of a book and the pile sliding away (halved)
+  const PACE = 0.85;       // the computer players' "thinking" pause before each card
+  const BOOK_PAUSE = 0.75; // the pauses between the fourth card of a book and the pile sliding away 
 
   const params = new URLSearchParams(window.location.search);
   const AUTO = params.get('auto') === '1';
