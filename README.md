@@ -57,8 +57,9 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
    zone, North 0-2, East 3-4, Dealer 5-6), so over four rounds every player holds each zone once and sits one
    round out with no zone. Zones show on every scorecard ("Zone 3-4 - Won: 1"). Only the four-player game is defined
    so far (`zonesForRound` in `rules.js`); 3 and 5 players are still to be decided.
-5. **Scoring (Milestone 6).** Every club you win is worth 10 points. Everyone starts the game on 100 points; the highest
-   total after the last round wins (4 rounds, or 8 with Expert Mode, see Settings). Rewards grow as the zone gets harder to hit:
+5. **Scoring (Milestone 6).** Every club you win is worth 10 points. Everyone starts a game on 100 points. A game is always
+   4 rounds. Beginner plays one game; Expert Mode plays two, each starting everyone back on 100, and the highest total wins (the two game scores
+   added up, see Settings). Rewards grow as the zone gets harder to hit:
    - Zone **0-2**: finish with no clubs **+20**, or with 1 or 2 clubs **+10**.
    - Zone **3-4**: finish with 3 or 4 clubs **+30**.
    - Zone **5-6**: finish with 5 or 6 clubs **+50**. (M9: 7 clubs now misses the zone and costs 70.)
@@ -107,13 +108,17 @@ Close with the button, Esc or a tap outside. Values are saved in localStorage (`
 
 - **Confirmation and Tips** (on/off switch): shows the dialog after each book and the two hand-area tooltips ("Please wait for your turn." and the follow-suit message). Off skips the dialog (the cards just pause, then slide to the winner) and hides both tooltips. It is independent of the mode.
 - **Expert Mode** (on/off switch, off by default) picks the mode (`LEVELS` in `rules.js`; `levelFor(expertMode)`).
-  Off = **Beginner**: 4 rounds (1 game). The computer plays toward its own safe zone using the odds, but each computer player also makes
+  Off = **Beginner**: 1 game of 4 rounds. The computer plays toward its own safe zone using the odds, but each computer player also makes
   `randomPlays` (1) random legal play(s) per round, at a book it does not announce, so a new player can beat it. The human dealer seat is never affected.
-  On = **Expert**: 8 rounds (2 games), no random plays; the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
+  On = **Expert**: 2 games of 4 rounds (8 rounds), no random plays; the computer looks ahead (`chooseCardSearch` in `ai.js`): for each legal card it deals the unseen
   cards 60 random ways, plays the round out and keeps the card with the best average score. Ties are allowed in both modes.
-  Zones and leaders keep rotating every round. Games longer than 4 rounds show one column per 4-round game (G1, G2) on the final scoreboard.
-  - Changing the switch shows a bold note ("Enabling Expert Mode will restart the game at 8 rounds. Press the close button to continue." or
-    "Disabling Expert Mode will restart the game at 4 rounds. ...") and the game restarts when the dialog closes (the page reloads; the setting is saved first).
+  Zones and leaders keep rotating every round, and game 2 starts the pattern again. Each game starts everyone on 100 points
+  (`gamePoints` resets at round 5; `gameTotals` keeps each finished game's score and `overall()` adds them up; the 100-point cap works inside each game).
+  What Expert Mode shows differently: the scorecards read "Score: 180+50" in game 2 (game 1's final score + the current game 2 score); the status area shows
+  "Round 2 of 4" and "Game 1 of 2" instead of "Book 3 of 7"; the round summary is titled "Round 2 of game 1 complete" with a "Game 1" / "Game 2" column and a
+  "Start Game 2" button after game 1; the final scoreboard has Game 1, Game 2 and Total columns. Beginner shows none of these.
+  - Changing the switch shows a bold note ("Enabling Expert Mode will reset the game to 2 playable games. Press the close button to continue." or
+    "Disabling Expert Mode will reset the game to 1 playable game. ...") and the game restarts when the dialog closes (the page reloads; the setting is saved first).
     Switching it back before closing does nothing.
   - To make Beginner stronger or weaker, change `randomPlays` in `LEVELS[0]` (0 = none, 2 = more). In 2000 simulated games a careful player won about 27% at 1
     (25% is even) and about 32% at 2.
@@ -154,7 +159,7 @@ per round: 0-2 -0.5 (hit 71%), 3-4 -2.0 (hit 33%), 5+ -1.8 (hit 13%), no zone -1
 round): 0-2 -1.8 (hit 69%), 3-4 -2.3 (hit 30%), 5-6 -7.3 (hit 9%, was -3.1 and 12% as 5+), no zone -14.8. 5-6 is now clearly the hardest zone; if it
 feels too harsh, raise its `reward` in `ZONES` (`rules.js`). With the 100-point cap (2000 games): average final 88 (sd 39), first-to-last gap 80
 (110 without the cap), a tie for first about 15%, and each seat wins about a quarter of the games. A player is sent
-back from 0 about 0.4 times per 4-round game (about 1.2 per 8-round game) and back from 200 only about once in 25 games.
+back from 0 about 0.4 times per 4-round game (the earlier 8-round carry-over version: about 1.3 bounces per game; resetting each game cut that to about 0.85) and back from 200 only about once in 25 games.
 In comparison tests (computer players unaware of the cap), the player in last place at halfway went on to win
 5.7% of 4-round games (2.3% without the cap) and 11.8% of 8-round games (2.8% without; odds-based computer players used for those).
 
