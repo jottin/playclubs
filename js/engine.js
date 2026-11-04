@@ -39,7 +39,9 @@
       bookNumber: 0,
       clubsWon: zeroes(),
       played: [],
-      gamePoints: filled(R.START_POINTS),
+      gamePoints: filled(R.START_POINTS), // the score in the game being played; every 4-round game starts at 100
+      gameIndex: 0, // 0 for the first 4-round game, 1 for the second (Expert Mode)
+      gameTotals: [], // one { seat: score } entry for every finished game; the final result is the sum of these
       history: [], // one entry per finished round: { clubs, zones, points, kinds, before, bounces }
       lastResult: null,
       randomBooks: {}, // seat -> Set of book numbers (0-6) at which that computer player plays a random legal card this round
@@ -48,6 +50,9 @@
     function startRound() {
       if (state.phase !== 'setup' && state.phase !== 'between-rounds') throw new Error('Cannot start a round now');
       state.roundIndex++;
+      // A new game (every 4 rounds) starts everyone back on 100 points.
+      if (state.roundIndex > 0 && state.roundIndex % R.ROUNDS === 0) state.gamePoints = filled(R.START_POINTS);
+      state.gameIndex = Math.floor(state.roundIndex / R.ROUNDS);
       state.hands = R.deal(rng).hands;
       state.book = [];
       state.bookNumber = 0;
@@ -132,9 +137,13 @@
         points: scored.points,
         kinds: scored.kinds,
       };
+      entry.game = state.gameIndex;
       state.history.push(entry);
-      state.phase = state.roundIndex >= state.totalRounds - 1 ? 'game-over' : 'between-rounds';
-      return Object.assign({ gameOver: state.phase === 'game-over' }, entry);
+      const gameOver = state.roundIndex >= state.totalRounds - 1;
+      const gameComplete = gameOver || (state.roundIndex + 1) % R.ROUNDS === 0; // the last round of a 4-round game
+      if (gameComplete) state.gameTotals.push(Object.assign({}, state.gamePoints));
+      state.phase = gameOver ? 'game-over' : 'between-rounds';
+      return Object.assign({ gameOver: gameOver, gameComplete: gameComplete, game: state.gameIndex }, entry);
     }
 
     // The AI plays toward its safe zone (or just avoids clubs when it has none). `extra` can override the AI context.
@@ -172,7 +181,14 @@
       level = R.levelInfo(id);
     }
 
-    return { state, startRound, legalCards, play, completeBook, finishRound, aiPick, setLevel };
+    // The result of the whole match: the finished games' scores added up (Beginner is one game, Expert two).
+    function overall() {
+      const o = zeroes();
+      state.gameTotals.forEach((g) => R.SEATS.forEach((seat) => (o[seat] += g[seat])));
+      return o;
+    }
+
+    return { state, overall, startRound, legalCards, play, completeBook, finishRound, aiPick, setLevel };
   }
 
   return { createGame };

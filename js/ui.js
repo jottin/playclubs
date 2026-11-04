@@ -110,8 +110,8 @@
       note.textContent = !restart
         ? ''
         : v.expertMode
-          ? 'Enabling Expert Mode will restart the game at ' + R.levelFor(true).rounds + ' rounds. Press the close button to continue.'
-          : 'Disabling Expert Mode will restart the game at ' + R.levelFor(false).rounds + ' rounds. Press the close button to continue.';
+          ? 'Enabling Expert Mode will reset the game to ' + R.levelFor(true).games + ' playable games. Press the close button to continue.'
+          : 'Disabling Expert Mode will reset the game to ' + R.levelFor(false).games + ' playable game. Press the close button to continue.';
     }
     const dlg = wireDialog('#settings-layer', '#settings-btn', '#settings-close', () => {
       expertAtOpen = S.get().expertMode;
@@ -178,19 +178,19 @@
     if (handTitle) handTitle.textContent = 'Your Hand (' + R.SEAT_SHORT.dealer + ')';
   };
 
-  UI.setScore = function (seat, field, value, animate) {
+  // `before` (optional, Expert Mode's second game): game 1's final score, shown first in a <span> ahead of "+value".
+  UI.setScore = function (seat, field, value, animate, before) {
     const b = $('[data-field="' + field + '"]', els.cards[seat]);
-    if (b.textContent === String(value)) return;
-    b.textContent = value;
+    const split = before !== null && before !== undefined;
+    if (b.textContent === (split ? before + '+' : '') + value && !!b.querySelector('span') === split) return; // already showing this
+    if (!split) b.textContent = value;
+    else b.innerHTML = '<span>' + before + '</span>+' + value;
     if (animate) {
       b.classList.remove('bump');
       void b.offsetWidth;
       b.classList.add('bump');
     }
   };
-
-  // Scorecard zone line: "Zone 3-4 · Won: 1". Green while you are inside your zone, red once you have won more
-  // clubs than the zone allows, plain while you are still short of it or have no zone.
   function refreshZoneState(seat) {
     const card = els.cards[seat];
     const zone = card.dataset.zone;
@@ -457,9 +457,9 @@
       )
       .join('');
     const html =
-      '<h3 class="sheet-title">Round ' + d.round + ' complete</h3>' +
+      '<h3 class="sheet-title">Round ' + d.round + (d.game ? ' of game ' + d.game : '') + ' complete</h3>' +
       '<p class="sheet-sub">Inside zones: 0-2 (1-2 pays +10, 0 pays +20), 3-4 pays +30, 5-6 pays +50. Outside zones: each club costs -10 points. Bounce back: 0 or 200 points scored resets total game points (\u21ba).</p>' +
-      '<table class="score-table"><thead><tr><th>Player</th><th>Zone</th><th>Won</th><th>Round</th><th>Game</th></tr></thead><tbody>' +
+      '<table class="score-table"><thead><tr><th>Player</th><th>Zone</th><th>Won</th><th>Round</th><th>' + (d.game ? 'Game ' + d.game : 'Game') + '</th></tr></thead><tbody>' +
       rows + '</tbody></table>' +
       (d.note ? '<p class="sheet-note">' + d.note + '</p>' : '') +
       '<button id="modal-continue" class="btn" type="button">' + d.button + '</button>';

@@ -111,7 +111,29 @@
     return done;
   }
 
-  /* ---------- one round ---------- */
+  /* ---------- rounds, games and scores on screen ---------- */
+
+  // Games are always 4 rounds. Beginner plays one; Expert Mode plays two and adds them up.
+  function gamesTotal() {
+    return Math.ceil(game.state.totalRounds / R.ROUNDS);
+  }
+  function roundInGame() {
+    return (game.state.roundIndex % R.ROUNDS) + 1;
+  }
+  function roundLabel() {
+    return 'Round ' + roundInGame() + ' of ' + R.ROUNDS;
+  }
+  // Expert Mode shows "Game 1 of 2" where Beginner shows "Book 3 of 7".
+  function gameLabel() {
+    return gamesTotal() > 1 ? 'Game ' + (game.state.gameIndex + 1) + ' of ' + gamesTotal() : undefined;
+  }
+  // Scorecard score: just the game score, or in Expert Mode's second game "180+50": game 1's final score (in a <span> so it can be
+  // styled on its own) + this game's score so far.
+  function setGameScore(seat, value, animate) {
+    const s = game.state;
+    const before = gamesTotal() < 2 || s.gameIndex === 0 ? null : s.gameTotals.slice(0, s.gameIndex).reduce((sum, g) => sum + g[seat], 0);
+    UI.setScore(seat, 'game', value, animate, before);
+  }
 
   /* ---------- safe zones ---------- */
 
@@ -132,15 +154,15 @@
   // Zones are issued, not chosen: reveal them on the scorecards one seat at a time, clockwise from the dealer.
   async function zonePhase() {
     const s = game.state;
-    const round = 'Round ' + (s.roundIndex + 1) + ' of ' + s.totalRounds;
+    const round = roundLabel();
     for (const seat of R.SEATS) {
       UI.setActive(seat);
-      UI.setStatus({ round: round, lead: 'Issuing safe zones', zone: R.SEAT_NAME[seat] + ': ' + (s.zones[seat] === null ? 'no zone' : R.zoneLabel(s.zones[seat])) });
+      UI.setStatus({ round: round, book: gameLabel(), lead: 'Issuing safe zones', zone: R.SEAT_NAME[seat] + ': ' + (s.zones[seat] === null ? 'no zone' : R.zoneLabel(s.zones[seat])) });
       UI.setZone(seat, s.zones[seat], true);
       await UI.sleep(450);
     }
     UI.setActive(null);
-    UI.setStatus({ round: round, zone: zoneLine() });
+    UI.setStatus({ round: round, book: gameLabel(), zone: zoneLine() });
     await UI.sleep(1300);
   }
 
@@ -154,7 +176,8 @@
     UI.renderHand(s.hands.dealer);
     ['west', 'north', 'east'].forEach((seat) => UI.setOppHand(seat, s.hands[seat].length));
     UI.markHand(null);
-    UI.setStatus({ round: 'Round ' + (s.roundIndex + 1) + ' of ' + s.totalRounds, lead: 'Dealing\u2026' });
+    if (s.roundIndex % R.ROUNDS === 0) R.SEATS.forEach((seat) => setGameScore(seat, s.gamePoints[seat], false)); // a new game: everyone on 100
+    UI.setStatus({ round: roundLabel(), book: gameLabel(), lead: 'Dealing\u2026' });
     await UI.sleep(600);
 
     await zonePhase();
@@ -162,8 +185,8 @@
     while (game.state.phase === 'playing') {
       const leaderName = R.SEAT_NAME[game.state.leader];
       UI.setStatus({
-        round: 'Round ' + (s.roundIndex + 1) + ' of ' + s.totalRounds,
-        book: 'Book ' + (s.bookNumber + 1) + ' of ' + R.BOOKS_PER_ROUND,
+        round: roundLabel(),
+        book: gameLabel() || 'Book ' + (s.bookNumber + 1) + ' of ' + R.BOOKS_PER_ROUND,
         lead: leaderName + ' leads',
         zone: zoneLine(),
       });
@@ -172,12 +195,12 @@
 
     const fin = game.finishRound();
     // Show what the round produced first; any player who reached 0 or 200 then bounces back to 100.
-    R.SEATS.forEach((seat) => UI.setScore(seat, 'game', fin.before[seat], true));
+    R.SEATS.forEach((seat) => setGameScore(seat, fin.before[seat], true));
     await UI.sleep(700);
     const bounced = R.SEATS.filter((seat) => fin.bounces[seat]);
     if (bounced.length) {
       await UI.sleep(500);
-      bounced.forEach((seat) => UI.setScore(seat, 'game', s.gamePoints[seat], true));
+      bounced.forEach((seat) => setGameScore(seat, s.gamePoints[seat], true));
       await UI.sleep(700);
     }
 
@@ -188,8 +211,11 @@
     if (low.length) note += ' ' + joinNames(low) + ' hit ' + R.CAP_LOW + ' and bounce' + (low.length > 1 ? '' : 's') + ' back to ' + R.START_POINTS + '.';
     if (high.length) note += ' ' + joinNames(high) + ' reached ' + R.CAP_HIGH + ' and ' + (high.length > 1 ? 'drop' : 'drops') + ' back to ' + R.START_POINTS + '.';
 
+    if (fin.gameComplete && !fin.gameOver) note += ' Game ' + (fin.game + 1) + ' is final. Game ' + (fin.game + 2) + ' starts everyone at ' + R.START_POINTS + '.';
+
     const summary = UI.showRoundSummary({
-      round: s.roundIndex + 1,
+      round: roundInGame(),
+      game: gamesTotal() > 1 ? fin.game + 1 : null, // Expert Mode only: the summary names the game
       rows: R.SEATS.map((seat) => ({
         name: R.SEAT_NAME[seat],
         zone: R.zoneLabel(fin.zones[seat]),
@@ -200,7 +226,7 @@
         bounce: fin.bounces[seat],
       })),
       note: note,
-      button: fin.gameOver ? 'See Final Scores' : 'Start Round ' + (s.roundIndex + 2),
+      button: fin.gameOver ? 'See Final Scores' : fin.gameComplete ? 'Start Game ' + (fin.game + 2) : 'Start Round ' + (roundInGame() + 1),
     });
     if (AUTO) setTimeout(() => document.getElementById('modal-continue').click(), 250 * UI.timeScale + 5);
     await summary;
@@ -216,17 +242,12 @@
 
   function finalScoreboardData() {
     const s = game.state;
-    const ranked = R.rankPlayers(s.gamePoints);
-    // Up to 4 rounds: one column per round. Longer games (8 rounds, Expert Mode) show one column per 4-round game.
-    const grouped = s.history.length > R.ROUNDS;
-    const cols = grouped ? s.history.length / R.ROUNDS : s.history.length;
-    const columns = [];
-    for (let i = 0; i < cols; i++) columns.push(grouped ? 'G' + (i + 1) : 'R' + (i + 1));
-    const perRound = (seat) => {
-      const pts = s.history.map((h) => h.points[seat]);
-      if (!grouped) return pts.map(fmtPoints);
-      return columns.map((_, g) => fmtPoints(pts.slice(g * R.ROUNDS, (g + 1) * R.ROUNDS).reduce((a, b) => a + b, 0)));
-    };
+    const totals = game.overall(); // the finished games added up (Beginner: its one game)
+    const ranked = R.rankPlayers(totals);
+    const twoGames = s.gameTotals.length > 1;
+    // Beginner: one column per round (points won or lost). Expert Mode: one column per game (that game's final score), added up in Total.
+    const columns = twoGames ? s.gameTotals.map((_, g) => 'Game ' + (g + 1)) : s.history.map((_, i) => 'R' + (i + 1));
+    const perRound = (seat) => (twoGames ? s.gameTotals.map((g) => String(g[seat])) : s.history.map((h) => fmtPoints(h.points[seat])));
     const winners = ranked.filter((r) => r.place === 1);
     let headline;
     if (winners.length === 1) {
@@ -237,7 +258,9 @@
     const bounced = s.history.some((h) => R.SEATS.some((seat) => h.bounces[seat]));
     return {
       headline: headline,
-      note: bounced ? 'Totals include the bounce back to ' + R.START_POINTS + ' at ' + R.CAP_LOW + ' or ' + R.CAP_HIGH + ', so they can differ from the sum of the rounds.' : '',
+      note: twoGames
+        ? 'Each game starts everyone at ' + R.START_POINTS + '. The total adds the two game scores.'
+        : bounced ? 'Totals include the bounce back to ' + R.START_POINTS + ' at ' + R.CAP_LOW + ' or ' + R.CAP_HIGH + ', so they can differ from the sum of the rounds.' : '',
       columns: columns,
       rows: ranked.map((r) => ({
         place: r.place,
@@ -249,7 +272,7 @@
   }
 
   async function runGame() {
-    game = E.createGame({ rng: rng, level: Settings.get().level }); // rounds follow the level: 4 (Beginner) or 8 (Expert Mode)
+    game = E.createGame({ rng: rng, level: Settings.get().level }); // games are 4 rounds: one (Beginner) or two (Expert Mode)
     R.setPlayerNames(N.pickNames(R.SEATS, rng)); // four new hurricane names every game; SEATS[0] is the human
     UI.setNames();
     window.__clubs = { game: game }; // for debugging / automated tests
