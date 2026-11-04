@@ -458,7 +458,7 @@
       .join('');
     const html =
       '<h3 class="sheet-title">Round ' + d.round + (d.game ? ' of game ' + d.game : '') + ' complete</h3>' +
-      '<p class="sheet-sub">Inside zones: 0-2 (1-2 pays +10, 0 pays +20), 3-4 pays +30, 5-6 pays +50. Outside zones: each club costs -10 points. Bounce back: 0 or 200 points scored resets total game points (\u21ba).</p>' +
+      '<p class="sheet-sub">Inside zones: 0-2 (1-2 pays +10, 0 pays +20), 3-4 pays +30, 5-6 pays +50. Outside zones: each club costs -10 points. Bounce back to 100(\u21ba): 0 or 200 points scored in a round.</p>' +
       '<table class="score-table"><thead><tr><th>Player</th><th>Zone</th><th>Won</th><th>Round</th><th>' + (d.game ? 'Game ' + d.game : 'Game') + '</th></tr></thead><tbody>' +
       rows + '</tbody></table>' +
       (d.note ? '<p class="sheet-note">' + d.note + '</p>' : '') +
