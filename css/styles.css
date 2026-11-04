@@ -276,7 +276,7 @@ button { font: inherit; color: inherit; }
 }
 
 .scorecard .name { margin: 0 0 3px; font-size: 14px; font-weight: 700; line-height: 1.25; }
-.scorecard p { margin: 0; font-size: 12px; line-height: 1.5; color: rgba(255, 255, 255, 0.82); }
+.scorecard p { margin: 0; font-size: 12px; line-height: 1.5; color: rgba(255, 255, 255, 0.8); }
 .scorecard b { display: inline-block; color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .scorecard[data-seat="north"]  { top: calc(var(--edge) + env(safe-area-inset-top)); left: 50%; translate: -50% 0; }
@@ -299,6 +299,7 @@ button { font: inherit; color: inherit; }
 .scorecard[data-bid-state="over"] .bidline span::after { content: " \25B2"; color: var(--bad); font-size: 0.8em; }
 .scorecard .bidline span { display: inline-block; white-space: nowrap; }
 .scorecard .bidline span:first-of-type { margin-right: .85em; }
+.scorecard .bidline + p b span { color: rgba(255, 255, 255, 0.8); font-weight: normal; margin-right: .15em; }
 
 @media (max-width: 550px) {
   :root { --score-h: 100px; --score-w: clamp(100px, 25vw, 160px); }
@@ -696,7 +697,7 @@ button { font: inherit; color: inherit; }
 .setting-text { display: flex; flex-direction: column; gap: 2px; }
 .setting-hint { font-size: 13px; color: var(--muted); }
 .setting-value, #set-level-name { font-size: 20px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
-.setting-note { font-size: 13px; font-weight: 700; min-height: 0; margin-bottom: 20px !important; padding: 0 .5em; opacity: 1; transition: all .2s ease; text-align: center; }
+.setting-note { font-size: 13px; font-weight: 700; min-height: 0; margin-bottom: 20px !important; padding: 0; opacity: 1; transition: all .2s ease; text-align: center; }
 .setting-note:empty { opacity: 0; }
 .setting-note.is-strong { color: #fbbf24; }
 
