@@ -479,3 +479,42 @@ test('Expert Mode setting: saved Hard Mode settings carry over, and the mode pic
   assert.equal(S.get().confirmBooks, false);
   delete global.window;
 });
+
+test('Expert Mode: two 4-round games, each starting on 100, added up at the end', () => {
+  const g = createGame({ rng: mulberry32(77), level: 1, rounds: 8 }); // level 1 only to keep the test fast; the rounds make it an 8-round match
+  const flags = [];
+  while (g.state.phase !== 'game-over') {
+    g.startRound();
+    if (g.state.roundIndex === 4) {
+      R.SEATS.forEach((seat) => assert.equal(g.state.gamePoints[seat], 100, 'game 2 starts everyone on 100'));
+      assert.equal(g.state.gameIndex, 1);
+    }
+    while (g.state.phase === 'playing') {
+      for (let i = 0; i < 4; i++) { const seat = g.state.turn; g.play(seat, g.aiPick(seat).id); }
+      g.completeBook();
+    }
+    const fin = g.finishRound();
+    flags.push([g.state.roundIndex, fin.game, fin.gameComplete, fin.gameOver]);
+  }
+  assert.deepEqual(flags.map((f) => f.slice(2)), [[false, false], [false, false], [false, false], [true, false], [false, false], [false, false], [false, false], [true, true]]);
+  assert.deepEqual(flags.map((f) => f[1]), [0, 0, 0, 0, 1, 1, 1, 1]);
+  assert.equal(g.state.gameTotals.length, 2);
+  const sum = g.overall();
+  R.SEATS.forEach((seat) => assert.equal(sum[seat], g.state.gameTotals[0][seat] + g.state.gameTotals[1][seat]));
+  // each game's total is that game's 4 rounds of points with the cap applied, so it stays between 1 and 199
+  g.state.gameTotals.forEach((gt) => R.SEATS.forEach((seat) => assert.ok(gt[seat] >= 1 && gt[seat] <= 199)));
+});
+
+test('Beginner: one 4-round game, and overall() is that game\'s score', () => {
+  const g = createGame({ rng: mulberry32(78), level: 1 });
+  while (g.state.phase !== 'game-over') {
+    g.startRound();
+    while (g.state.phase === 'playing') {
+      for (let i = 0; i < 4; i++) { const seat = g.state.turn; g.play(seat, g.aiPick(seat).id); }
+      g.completeBook();
+    }
+    g.finishRound();
+  }
+  assert.equal(g.state.gameTotals.length, 1);
+  assert.deepEqual(g.overall(), g.state.gamePoints);
+});
