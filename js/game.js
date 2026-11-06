@@ -207,7 +207,9 @@
     // One line above the colour key: whoever scored the most points this round (ties name everyone).
     const best = Math.max.apply(null, R.SEATS.map((seat) => fin.points[seat]));
     const roundWinners = R.SEATS.filter((seat) => fin.points[seat] === best).map((seat) => R.SEAT_NAME[seat]);
-    let note = joinNames(roundWinners) + (roundWinners.length > 1 ? ' win' : ' wins') + ' the round.';
+    // Say why they won: the most points, nobody lost points, or everybody lost and theirs was the smallest loss.
+    const why = best > 0 ? 'scoring the most points' : best === 0 ? 'not losing points' : 'losing the fewest points';
+    let note = joinNames(roundWinners) + (roundWinners.length > 1 ? ' win' : ' wins') + ' the round by ' + why + '.';
     if (fin.gameOver) {
       // Last round of the whole match: name the overall winner instead of the round winner.
       const top = R.rankPlayers(game.overall()).filter((r) => r.place === 1).map((r) => R.SEAT_NAME[r.seat]);
