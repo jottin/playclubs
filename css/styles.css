@@ -299,11 +299,12 @@ button { font: inherit; color: inherit; }
 .scorecard[data-bid-state="over"] .bidline span::after { content: " \25B2"; color: var(--bad); font-size: 0.8em; }
 .scorecard .bidline span { display: inline-block; white-space: nowrap; }
 .scorecard .bidline span:first-of-type { margin-right: .85em; }
-.scorecard .bidline + p b span { color: rgba(255, 255, 255, 0.8); font-weight: normal; margin-right: .15em; }
+.scorecard .bidline + p b > span { color: rgba(255, 255, 255, 0.8); font-weight: normal; margin-right: .1em; }
 
 @media (max-width: 550px) {
   :root { --score-h: 100px; --score-w: clamp(100px, 25vw, 160px); }
   .scorecard .bidline span { display: block; white-space: normal; }
+  .scorecard .bidline + p:has(b > span) { white-space: nowrap; }
 }
 
 @media (min-width: 551px) {
@@ -608,9 +609,9 @@ button { font: inherit; color: inherit; }
 }
 
 /* Phones: keep "Zone 0-2 · Won: 0 ✓" inside the narrow side scorecards */
-@media (max-width: 430px) {
-  .scorecard .bidline { font-size: 11px; letter-spacing: -0.01em; }
-  .scorecard p { font-size: 11px; letter-spacing: -0.02em; }
+@media (max-width: 460px) {
+  .scorecard .bidline { font-size: 10.5px; letter-spacing: -0.01em; }
+  .scorecard p { font-size: 10.5px; letter-spacing: -0.02em; }
   .scorecard { padding-right: 9px; }
 }
 
