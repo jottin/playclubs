@@ -548,6 +548,16 @@ button { font: inherit; color: inherit; }
 .place { display: inline-block; font-size: .85em; font-weight: 700; color: rgba(255, 255, 255, 0.78); }
 .winner .place { color: #fbbf24; }
 
+/* ---------- Color key for the round summary + final scoreboard ---------- */
+:root { --bounce: #8ab4ff; }
+.score-table td.bounce { color: var(--bounce); }
+.sheet-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; margin: 0 0 20px; font-size: 13px; line-height: 1.4; color: var(--muted); }
+.sheet-legend span { white-space: nowrap; }
+.sheet-legend .sw { font-size: 1.15em; line-height: 1; vertical-align: -0.05em; }
+.sheet-legend .sw.inside { color: var(--good); }
+.sheet-legend .sw.outside { color: var(--bad); }
+.sheet-legend .sw.bounce { color: var(--bounce); }
+
 /* ---------- Tooltip (3 seconds, then gone) ---------- */
 
 #tooltip {
