@@ -69,12 +69,15 @@ React Native / Capacitor / Flutter-WebView wrapper or tested headlessly.
    3-4 / won 2 = -20, 5-6 / won 6 = +50, 5-6 / won 7 = -70, 5-6 / won 4 = -40, no zone / won 2 = -20. Scores never end below 1 or above 199.
    **100-point cap rule:** after each round, a total of 0 or less, or 200 or more, goes straight back to 100
    (`applyCap` in `rules.js`, applied in `finishRound` in `engine.js`). Anything beyond the limit is lost. The scorecard shows the
-   round's result first and then the bounce; the round summary marks it with a loop arrow and a note.
+   round's result first and then the bounce; in the round summary that round's value is shown in blue (the colour key under the table explains it).
    Scoring lives in `scoreZone` (`rules.js`). The AI weighs cards in *clubs* (points / 10): `zoneUtility`.
 6. **Scorecards** show `Zone` and `Won` live (green check while you are inside your zone, red triangle once you have won more than it allows; plain with no zone) plus Score.
-   Round Points appear only in the round summary dialog.
+   Round Points appear only in the round summary dialog. The round summary has one line under the table: "X wins the round." (ties name everyone;
+   the highest points that round), or "X wins the game." after the last round (the highest total; "X and Y tie for the win." on a tie).
+   A colour key follows it: green Inside Zone(+), red Outside Zone(-), blue Bounce(100↺); a round that caused a bounce is blue in the ROUND column.
+   The Beginner final scoreboard shows the same key; the Expert final (game totals only) does not.
 7. **Final ranking** uses shared places when game points are equal (1st, 1st, 3rd, 4th). Totals include the bounces, so
-   they can differ from the sum of the rounds (the final scoreboard says so).
+   they can differ from the sum of the rounds.
 
 ## Suit icons and player names
 
