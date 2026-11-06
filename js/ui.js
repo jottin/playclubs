@@ -448,12 +448,20 @@
     });
   }
 
+  // Colour key for the round points: green inside the zone, red outside it, blue when the round caused a bounce back to 100.
+  const LEGEND =
+    '<p class="sheet-legend">' +
+    '<span><b class="sw inside">\u25CF</b>: Inside Zone(+)</span>' +
+    '<span><b class="sw outside">\u25CF</b>: Outside Zone(-)</span>' +
+    '<span><b class="sw bounce">\u25CF</b>: Bounce(100\u21BA)</span>' +
+    '</p>';
+
   UI.showRoundSummary = function (d) {
     const rows = d.rows
       .map(
         (r) =>
           '<tr><td class="who">' + r.name + '</td><td>' + r.zone + '</td><td>' + r.won +
-          '</td><td class="' + r.kind + '">' + r.pointsText + '</td><td class="total">' + r.total + (r.bounce ? ' \u21ba' : '') + '</td></tr>'
+          '</td><td class="' + (r.bounce ? 'bounce' : r.kind) + '">' + r.pointsText + '</td><td class="total">' + r.total + (r.bounce ? ' \u21ba' : '') + '</td></tr>'
       )
       .join('');
     const html =
@@ -462,6 +470,7 @@
       '<table class="score-table"><thead><tr><th>Player</th><th>Zone</th><th>Won</th><th>Round</th><th>' + (d.game ? 'Game ' + d.game : 'Game') + '</th></tr></thead><tbody>' +
       rows + '</tbody></table>' +
       (d.note ? '<p class="sheet-note">' + d.note + '</p>' : '') +
+      LEGEND +
       '<button id="modal-continue" class="btn" type="button">' + d.button + '</button>';
     return showModal(html, 'modal-continue');
   };
@@ -472,7 +481,7 @@
         (r) =>
           '<tr class="' + (r.place === 1 ? 'winner' : '') + '"><td><span class="place">' + ORDINAL[r.place] + '</span></td>' +
           '<td class="who">' + r.name + '</td>' +
-          r.perRound.map((p) => '<td class="' + (p.charAt(0) === '+' ? 'bonus' : p.charAt(0) === '\u2212' ? 'miss' : '') + '">' + p + '</td>').join('') +
+          r.perRound.map((p) => '<td class="' + p.kind + '">' + p.text + '</td>').join('') +
           '<td class="total">' + r.total + '</td></tr>'
       )
       .join('');
@@ -483,6 +492,7 @@
       '<table class="score-table"><thead><tr><th></th><th>Player</th>' + head + '<th>Total</th></tr></thead><tbody>' +
       rows + '</tbody></table>' +
       (d.note ? '<p class="sheet-note">' + d.note + '</p>' : '') +
+      (d.legend ? LEGEND : '') +
       '<button id="modal-continue" class="btn" type="button">Play Again</button>';
     return showModal(html, 'modal-continue');
   };

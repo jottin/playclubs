@@ -204,14 +204,15 @@
       await UI.sleep(700);
     }
 
-    const hit = R.SEATS.filter((seat) => fin.kinds[seat] === 'bonus').map((seat) => R.SEAT_NAME[seat]);
-    let note = hit.length ? 'Inside their zone: ' + joinNames(hit) + '.' : 'Nobody finished inside their zone.';
-    const low = R.SEATS.filter((seat) => fin.bounces[seat] === 'low').map((seat) => R.SEAT_NAME[seat]);
-    const high = R.SEATS.filter((seat) => fin.bounces[seat] === 'high').map((seat) => R.SEAT_NAME[seat]);
-    if (low.length) note += ' ' + joinNames(low) + ' hit ' + R.CAP_LOW + ' and bounce' + (low.length > 1 ? '' : 's') + ' back to ' + R.START_POINTS + '.';
-    if (high.length) note += ' ' + joinNames(high) + ' reached ' + R.CAP_HIGH + ' and ' + (high.length > 1 ? 'drop' : 'drops') + ' back to ' + R.START_POINTS + '.';
-
-    if (fin.gameComplete && !fin.gameOver) note += ' Game ' + (fin.game + 1) + ' is final. Game ' + (fin.game + 2) + ' starts everyone at ' + R.START_POINTS + '.';
+    // One line above the colour key: whoever scored the most points this round (ties name everyone).
+    const best = Math.max.apply(null, R.SEATS.map((seat) => fin.points[seat]));
+    const roundWinners = R.SEATS.filter((seat) => fin.points[seat] === best).map((seat) => R.SEAT_NAME[seat]);
+    let note = joinNames(roundWinners) + (roundWinners.length > 1 ? ' win' : ' wins') + ' the round.';
+    if (fin.gameOver) {
+      // Last round of the whole match: name the overall winner instead of the round winner.
+      const top = R.rankPlayers(game.overall()).filter((r) => r.place === 1).map((r) => R.SEAT_NAME[r.seat]);
+      note = top.length > 1 ? joinNames(top) + ' tie for the win.' : top[0] + ' wins the game.';
+    }
 
     const summary = UI.showRoundSummary({
       round: roundInGame(),
@@ -247,7 +248,11 @@
     const twoGames = s.gameTotals.length > 1;
     // Beginner: one column per round (points won or lost). Expert Mode: one column per game (that game's final score), added up in Total.
     const columns = twoGames ? s.gameTotals.map((_, g) => 'Game ' + (g + 1)) : s.history.map((_, i) => 'R' + (i + 1));
-    const perRound = (seat) => (twoGames ? s.gameTotals.map((g) => String(g[seat])) : s.history.map((h) => fmtPoints(h.points[seat])));
+    // Beginner: green/red points per round, blue when that round caused a bounce. Expert: the game scores, uncoloured.
+    const perRound = (seat) =>
+      twoGames
+        ? s.gameTotals.map((g) => ({ text: String(g[seat]), kind: '' }))
+        : s.history.map((h) => ({ text: fmtPoints(h.points[seat]), kind: h.bounces[seat] ? 'bounce' : h.kinds[seat] === 'bonus' ? 'bonus' : h.kinds[seat] === 'miss' ? 'miss' : '' }));
     const winners = ranked.filter((r) => r.place === 1);
     let headline;
     if (winners.length === 1) {
@@ -255,12 +260,10 @@
     } else {
       headline = joinNames(winners.map((w) => R.SEAT_NAME[w.seat])) + ' tie for first place.';
     }
-    const bounced = s.history.some((h) => R.SEATS.some((seat) => h.bounces[seat]));
     return {
       headline: headline,
-      note: twoGames
-        ? 'Each game starts everyone at ' + R.START_POINTS + '. The total adds the two game scores.'
-        : bounced ? 'Totals include the bounce back to ' + R.START_POINTS + ' at ' + R.CAP_LOW + ' or ' + R.CAP_HIGH + ', so they can differ from the sum of the rounds.' : '',
+      note: '',
+      legend: !twoGames, // the colour key belongs to the round-by-round (Beginner) scoreboard
       columns: columns,
       rows: ranked.map((r) => ({
         place: r.place,
