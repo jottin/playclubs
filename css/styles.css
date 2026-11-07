@@ -145,8 +145,9 @@ button { font: inherit; color: inherit; }
 }
 
 .status-item:empty { display: none; }
-#status-brand { display: flex; flex-flow: row wrap; font-weight: 700; font-size: 1.05em; color: #fffc; }
+#status-brand { align-items: center; display: flex; flex-flow: row wrap; font-weight: 700; font-size: 1.05em; color: #fffc; }
 #status-brand .brandmark { fill:#fffc; margin: 1px 1px 0 0; height: 18px; width: 18px; }
+#status-brand span { display: flex; }
 #status-brand small { font-size: .8em; font-weight: normal; margin-top: -2px; }
 #status-round, #status-book { font-size: .9em; }
 #status-zone { display: none; }
@@ -165,8 +166,8 @@ button { font: inherit; color: inherit; }
   :root {
     --score-h: 100px;
   }
-  #status-brand { max-width: min-content; min-width: 80px; }
-  #status-brand span { height: 18px; scale: 1.1; }
+  #status-brand { max-width: min-content; }
+  #status-brand span:has(svg) { height: 18px; scale: 1.1; }
   #settings-btn span { display: none; }
   #settings-btn::before { scale: 1.2; }
   #rules-btn { font-size: 20px !important; } 
@@ -305,6 +306,7 @@ button { font: inherit; color: inherit; }
   :root { --score-h: 100px; --score-w: clamp(100px, 25vw, 160px); }
   .scorecard .bidline span { display: block; white-space: normal; }
   .scorecard .bidline + p:has(b > span) { white-space: nowrap; }
+  .scorecard .bidline + p b { letter-spacing: -0.05em; }
 }
 
 @media (min-width: 551px) {
@@ -530,7 +532,7 @@ button { font: inherit; color: inherit; }
 .sheet-title { margin-bottom: 4px; font-size: 24px; }
 .sheet-sub { margin-bottom: 14px; }
 .sheet-note, .sheet-legend { margin-bottom: 20px !important; }
-.sheet-note { font-size: 14px; font-weight: bold; color: #fbbf24; }
+.sheet-note { color: #fbbf24; font-size: 14px; font-weight: bold; text-wrap: pretty; }
 .score-table { width: 100%; margin: 0 0 14px; border-collapse: separate; border-spacing: 0 10px; font-size: 15px; font-variant-numeric: tabular-nums; }
 .score-table th { padding: 12px 8px 4px; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-align: right; }
 .score-table td { padding: 12px 6px 4px; text-align: right; border-top: 1px solid rgba(255, 255, 255, 0.08); }
@@ -709,7 +711,7 @@ button { font: inherit; color: inherit; }
 .setting-text { display: flex; flex-direction: column; gap: 2px; }
 .setting-hint { font-size: 13px; color: var(--muted); }
 .setting-value, #set-level-name { font-size: 20px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
-.setting-note { font-size: 13px; font-weight: 700; min-height: 0; margin-bottom: 20px !important; padding: 0; opacity: 1; transition: all .2s ease; text-align: center; }
+.setting-note { font-size: 13px; font-weight: 700; min-height: 0; margin-bottom: 20px !important; padding: 0; opacity: 1; transition: all .2s ease; text-align: center; text-wrap: pretty; }
 .setting-note:empty { opacity: 0; }
 .setting-note.is-strong { color: #fbbf24; }
 
