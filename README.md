@@ -117,7 +117,7 @@ Close with the button, Esc or a tap outside. Values are saved in localStorage (`
   cards 60 random ways, plays the round out and keeps the card with the best average score. Ties are allowed in both modes.
   Zones and leaders keep rotating every round, and game 2 starts the pattern again. Each game starts everyone on 100 points
   (`gamePoints` resets at round 5; `gameTotals` keeps each finished game's score and `overall()` adds them up; the 100-point cap works inside each game).
-  What Expert Mode shows differently: the scorecards read "Score: 180+50" in game 2 (game 1's final score + the current game 2 score); the status area shows
+  What Expert Mode shows differently: the scorecards read "Score: 180|50" in game 2 (game 1's final score, a divider, then the current game 2 score, each part in its own span); the status area shows
   "Round 2 of 4" and "Game 1 of 2" instead of "Book 3 of 7"; the round summary is titled "Round 2 of game 1 complete" with a "Game 1" / "Game 2" column and a
   "Start Game 2" button after game 1; the final scoreboard has Game 1, Game 2 and Total columns. Beginner shows none of these.
   - Changing the switch shows a bold note ("Enabling Expert Mode will reset the game to 2 playable games. Press the close button to continue." or
