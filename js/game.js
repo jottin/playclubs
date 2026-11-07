@@ -127,8 +127,8 @@
   function gameLabel() {
     return gamesTotal() > 1 ? 'Game ' + (game.state.gameIndex + 1) + ' of ' + gamesTotal() : undefined;
   }
-  // Scorecard score: just the game score, or in Expert Mode's second game "180+50": game 1's final score (in a <span> so it can be
-  // styled on its own) + this game's score so far.
+  // Scorecard score: just the game score, or in Expert Mode's second game "180|50": game 1's final score and a divider (each in a
+  // <span> so they can be styled on their own) + this game's score so far.
   function setGameScore(seat, value, animate) {
     const s = game.state;
     const before = gamesTotal() < 2 || s.gameIndex === 0 ? null : s.gameTotals.slice(0, s.gameIndex).reduce((sum, g) => sum + g[seat], 0);

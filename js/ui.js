@@ -182,9 +182,9 @@
   UI.setScore = function (seat, field, value, animate, before) {
     const b = $('[data-field="' + field + '"]', els.cards[seat]);
     const split = before !== null && before !== undefined;
-    if (b.textContent === (split ? before + '+' : '') + value && !!b.querySelector('span') === split) return; // already showing this
+    if (b.textContent === (split ? before + '|' : '') + value && b.querySelectorAll('span').length === (split ? 2 : 0)) return; // already showing this
     if (!split) b.textContent = value;
-    else b.innerHTML = '<span>' + before + '</span>+' + value;
+    else b.innerHTML = '<span>' + before + '</span><span>|</span>' + value;
     if (animate) {
       b.classList.remove('bump');
       void b.offsetWidth;
