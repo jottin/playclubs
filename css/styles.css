@@ -300,10 +300,11 @@ button { font: inherit; color: inherit; }
 .scorecard[data-bid-state="over"] .bidline span::after { content: " \25B2"; color: var(--bad); font-size: 0.8em; }
 .scorecard .bidline span { display: inline-block; white-space: nowrap; }
 .scorecard .bidline span:first-of-type { margin-right: .85em; }
-.scorecard .bidline + p b > span { color: rgba(255, 255, 255, 0.8); font-weight: normal; margin-right: .05em; margin-left: -.05em; }
+.scorecard .bidline + p b > span { color: rgba(255, 255, 255, 0.8); font-weight: normal; margin-right: .1em; margin-left: -.05em; }
 
 @media (max-width: 550px) {
   :root { --score-h: 100px; --score-w: clamp(100px, 25vw, 160px); }
+  .scorecard { padding: 6px 8px; }
   .scorecard .bidline span { display: block; white-space: normal; }
   .scorecard .bidline + p:has(b > span) { white-space: nowrap; }
   .scorecard .bidline + p b { letter-spacing: -0.05em; }
@@ -625,7 +626,6 @@ button { font: inherit; color: inherit; }
 @media (max-width: 460px) {
   .scorecard .bidline { font-size: 10.5px; letter-spacing: -0.01em; }
   .scorecard p { font-size: 10.5px; letter-spacing: -0.02em; }
-  .scorecard { padding-right: 9px; }
 }
 
 /* Target badge: pops onto the top-right corner of every scorecard that holds a safe zone this round
