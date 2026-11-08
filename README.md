@@ -173,4 +173,4 @@ folder or a copy of it). The viewport meta, safe-area insets and touch handling 
 
 ## Felt texture (9)
 
-The green felt used to be an SVG noise filter, which each browser draws differently (Safari and Firefox gave a coarse "maze" grain). It is now a pre-rendered tile, `img/felt.jpg` (1x) and `img/felt@2x.jpg` (2x), so every browser shows the same felt. `tools/build-single-file.js` inlines it into `dist/clubs.html`.
+The green felt is an embeddable SVG image that is designed to be used as a repeatable pattern having no seams or visual areas of repetition. The back of playing cards are also designed having an embeddable svg pattern.
