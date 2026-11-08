@@ -31,7 +31,10 @@
 
   <!-- Suit icons - one shape per suit, reused everywhere with <use> -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-    <!-- Target badge shown on a scorecard while that player is inside their safe zone -->
+    <radialGradient id="club-gradient" cx="50%" cy="85%" r="100%" fx="50%" fy="85%">
+      <stop offset="15%" stop-color="#0c552e"></stop>
+      <stop offset="100%" stop-color="#072316"></stop>
+    </radialGradient>
     <filter id="zone-badge-shadow" filterUnits="userSpaceOnUse" x="100" y="100" width="40" height="44">
       <feOffset dx="0" dy="2"/>
       <feGaussianBlur result="blur" stdDeviation="2"/>
@@ -80,7 +83,7 @@
         <button id="rules-btn" type="button" aria-haspopup="dialog" aria-label="Game rules" title="Rules">?</button>
 
         <div id="table">
-          <svg class="watermark" aria-hidden="true"><use href="#s-clubs"/></svg>
+          <svg class="watermark" aria-hidden="true"><use fill="url(#club-gradient)" href="#s-clubs"/></svg>
         </div>
 
         <!-- Face-down hands of the three computer players: mostly off-screen, tucked behind their scorecards (filled by UI.setOppHand) -->
