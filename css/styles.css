@@ -891,6 +891,13 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; text
 a.btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; filter: none; }
 #rules-body .btn-quiet { min-height: 38px; padding: 8px 20px; font-size: 14px; background: rgba(255, 255, 255, 0.12); }
 .tab-note { font-size: 13px; color: var(--muted); }
+#donate-link {
+  border-radius: 5px;
+  font-size: 15px;
+  min-height: auto;
+  margin-bottom: .5em;
+  padding: 6px 12px;
+}
 
 /* ---------- Deal button (M9) ---------- */
 
