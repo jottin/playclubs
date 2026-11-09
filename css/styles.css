@@ -702,7 +702,7 @@ button { font: inherit; color: inherit; }
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 14px 4px;
+  padding: 16px 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -883,6 +883,7 @@ button { font: inherit; color: inherit; }
 #rules-tabs [role="tab"][aria-selected="true"] { color: #fff; border-bottom-color: #6f8cff; }
 #rules-tabs [role="tab"]:focus-visible { outline: 3px solid #22d3ee; outline-offset: -3px; border-radius: 6px; }
 .tab-panel[hidden] { display: none; }
+.tab-panel { margin-top: 20px; }
 #rules-body a { color: #8ab4ff; }
 #rules-body a.btn { color: #fff; }
 .tab-action { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
