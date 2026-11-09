@@ -186,9 +186,34 @@
     <!-- Rules dialog: the title and the Close button stay in view, the text in between scrolls -->
     <div id="rules-layer" class="layer full" aria-hidden="true">
       <div class="dialog wide" id="rules-dialog" role="dialog" aria-modal="true" aria-labelledby="rules-title">
-        <h3 class="sheet-title" id="rules-title">How to Play Clubs</h3>
+        <h3 class="sheet-title" id="rules-title">About Playclubs.net</h3>
 
-        <div id="rules-body" tabindex="0" aria-label="Rules text">
+        <!-- Tabs: About, Rules, Support, Privacy. The one open when the dialog closes is the one shown next time. -->
+        <div id="rules-tabs" role="tablist" aria-label="About, rules, support and privacy">
+          <button type="button" role="tab" id="tab-btn-about" data-tab="about" aria-controls="tab-about" aria-selected="true">About</button>
+          <button type="button" role="tab" id="tab-btn-rules" data-tab="rules" aria-controls="tab-rules" aria-selected="false" tabindex="-1">Rules</button>
+          <button type="button" role="tab" id="tab-btn-support" data-tab="support" aria-controls="tab-support" aria-selected="false" tabindex="-1">Support</button>
+          <button type="button" role="tab" id="tab-btn-privacy" data-tab="privacy" aria-controls="tab-privacy" aria-selected="false" tabindex="-1">Privacy</button>
+        </div>
+
+        <div id="rules-body" tabindex="0" aria-label="About Playclubs.net">
+
+          <!-- ABOUT -->
+          <div class="tab-panel" id="tab-about" role="tabpanel" aria-labelledby="tab-btn-about">
+            <p>Playclubs.net was set up to deliver a different experience to the world of trick-taking card games. Similar to Hearts and Spades, Clubs combines suit-led game play while introducing a completely new type of scoring objective.</p>
+            <p>Most trick-taking games deal the whole deck to a fixed number of players. Clubs works with 3, 4 or 5 players (four is standard). Scoring is based on odds, and the player with the highest score wins! Read the <a href="#" class="tab-link" data-tab="rules">rules</a> to learn how it works.</p>
+
+            <h4>Support the game</h4>
+            <p>Clubs is free to play and has no ads. If you enjoy it, a donation helps keep it online. Donations are voluntary and unlock nothing in the game.</p>
+            <p class="tab-action"><a id="donate-link" class="btn" href="PAYPAL_LINK_HERE" target="_blank" rel="noopener noreferrer">Donate with PayPal</a></p>
+
+            <h4>Good to know</h4>
+            <p>Made by visualcraftsman. Version 1.</p>
+            <p>Add Clubs to your home screen to play full-screen. Once it has loaded, it works without a connection too.</p>
+          </div>
+
+          <!-- RULES (the original rules text, unchanged) -->
+          <div class="tab-panel" id="tab-rules" role="tabpanel" aria-labelledby="tab-btn-rules" hidden>
           <p>Clubs is a trick-taking card game in which club cards decide the score. Every player starts a game with a score of 100 points, and the player with the most points after the last round wins. At the start of each round, every player (except one) is issued a safe zone for how many clubs they will win. End the round inside your zone to earn points&mdash;every club won outside your zone costs 10 points. Players&rsquo; scores can bounce back to 100 if their score during a round reaches 0 or 200 points.</p>
 
           <h4>1. Objective &amp; scoring</h4>
@@ -248,6 +273,59 @@
             <li><b>Sound effects:</b> turn the card sounds on or off.</li>
             <li><b>Expert Mode:</b> off by default (Beginner Mode). Every game is 4 rounds. Beginner plays one game, and each computer player also plays one random card in every round, so they are easier to beat while you learn. Expert Mode plays two games, with no random plays: the computer players play toward their own zone by looking ahead at the odds, which can make their turns a little slower. Each game starts everyone at 100 points, and your final score is the two game scores added together. Changing the mode restarts the game when you close Settings.</li>
           </ul>
+          </div>
+
+          <!-- SUPPORT -->
+          <div class="tab-panel" id="tab-support" role="tabpanel" aria-labelledby="tab-btn-support" hidden>
+            <h4>What is Clubs?</h4>
+            <p>Clubs is a trick-taking card game in which club cards decide the score. In a standard game where you face off against 3 opponents, all 4 players fight to win points. Points can be won or lost through each round as players hit or miss their safe zones. End the round inside your zone to win points. Miss it, and every club costs you!</p>
+
+            <h4>How many players can play Clubs?</h4>
+            <p>3 to 5 players can play Clubs. A standard game is played among 4 players. To play with 3 or 5 players, the game rules change slightly. See the <a href="#" class="tab-link" data-tab="rules">rules</a> for more information.</p>
+
+            <h4>How do I win?</h4>
+            <p>After the last round, the player with the most points wins. In Beginner Mode a game is 4 rounds. In Expert Mode you play two games of 4 rounds, and the two game scores are added together.</p>
+
+            <h4>What does &ldquo;bounce back to 100&rdquo; mean?</h4>
+            <p>If a player&rsquo;s score reaches 0 or below, or 200 or above, at the end of a round, it goes straight back to 100. Anything beyond the limit is lost. This rescues a player at rock bottom and pulls back a runaway leader.</p>
+
+            <h4>What is the difference between Beginner and Expert Mode?</h4>
+            <p>Beginner Mode (the default) is one game of 4 rounds, and each computer player also plays one random card per round, so they can be beaten. Expert Mode is two games of 4 rounds. The computer players never play at random and look ahead, testing cards against many possible deals. Switch between them in Settings.</p>
+
+            <h4>Why isn&rsquo;t the entire deck dealt to players in a game of Clubs?</h4>
+            <p>Clubs uses only part of the deck (28 cards with four players). Because nobody knows which cards were set aside, you can&rsquo;t count cards to know how many clubs are left, and the same game works with 3, 4 or 5 players.</p>
+
+            <h4>Does Clubs work offline?</h4>
+            <p>Yes. Once the game has loaded, it is saved on your device and works without a connection. Add it to your home screen to play full-screen.</p>
+
+            <h4>Contact</h4>
+            <p>Have a question or found a problem? Send an email, or report a bug on GitHub.</p>
+            <p class="tab-action">
+              <button type="button" id="reveal-email" class="btn btn-quiet">Show email address</button>
+              <span id="email-slot"></span>
+            </p>
+            <p><a href="https://github.com/jottin/playclubs/issues" target="_blank" rel="noopener noreferrer">Report a bug on GitHub</a> (a free GitHub account is needed).</p>
+          </div>
+
+          <!-- PRIVACY -->
+          <div class="tab-panel" id="tab-privacy" role="tabpanel" aria-labelledby="tab-btn-privacy" hidden>
+            <p>Playclubs.net is a free card game you can play without an account. We don&rsquo;t ask for your name or email address to play, and we keep what we learn about your visit to a minimum. This page explains exactly what that is.</p>
+
+            <h4>1. Game data stored on your device</h4>
+            <p>Clubs saves a few settings in your browser&rsquo;s local storage so they are remembered next time: sound on or off, Confirmation and Tips on or off, Expert Mode on or off, and the last tab you opened in this window. This data stays on your device. It is never sent to us or to anyone else. You can erase it at any time by clearing this site&rsquo;s data in your browser. The game also keeps its own files in your browser&rsquo;s cache so it loads quickly and works offline.</p>
+
+            <h4>2. Cookies</h4>
+            <p>Clubs does not set any cookies. It does not use advertising or analytics tools.</p>
+
+            <h4>3. Hosting and links to other sites</h4>
+            <p>Clubs is hosted on GitHub Pages. Like any web host, GitHub may log technical details, such as your IP address, when your browser asks for the page. See <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub&rsquo;s privacy statement</a>. If you follow the Donate link, PayPal handles your payment under its own privacy policy, and GitHub and PayPal may set their own cookies on their own pages.</p>
+
+            <h4>4. If you contact us</h4>
+            <p>If you email support, we see your email address and your message. We use them only to reply.</p>
+
+            <p class="tab-note">Last updated: November 9, 2026.</p>
+          </div>
+
         </div>
 
         <div class="rules-foot">
