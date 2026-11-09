@@ -148,7 +148,7 @@ button { font: inherit; color: inherit; }
 #status-brand { align-items: center; display: flex; flex-flow: row wrap; font-weight: 700; font-size: 1.05em; color: #fffc; }
 #status-brand .brandmark { fill:#fffc; margin: 1px 1px 0 0; height: 18px; width: 18px; }
 #status-brand span { display: flex; }
-#status-brand small { font-size: .8em; font-weight: normal; margin-top: -2px; }
+#status-brand small { color: #fff9; font-size: .8em; font-weight: normal; margin-top: -2px; }
 #status-round, #status-book { font-size: .9em; }
 #status-zone { display: none; }
 .status-item.at-tl, .status-item.at-tr, .status-item.at-bl, .status-item.at-br { position: absolute; }
@@ -208,7 +208,7 @@ button { font: inherit; color: inherit; }
 #table .watermark {
   width: calc(var(--bw) * 1.3);
   height: calc(var(--bw) * 1.3);
-  opacity: .9;
+  filter: drop-shadow(0 1.5px 0 rgb(255, 255, 255, 0.25));
 }
 
 /* ---------- Bid picker (centre of the table while the dealer bids) ---------- */
@@ -513,7 +513,7 @@ button { font: inherit; color: inherit; }
 
 .btn {
   min-height: 46px;
-  padding: 15px 30px 16px;
+  padding: 14px 30px 15px;
   border: 0;
   border-radius: 999px;
   background: #2b50d6dd;
