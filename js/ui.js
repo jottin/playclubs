@@ -133,12 +133,12 @@
     expertSw.addEventListener('click', () => S.set({ expertMode: !S.get().expertMode }));
     S.onChange(render);
 
-    // Info dialog (the ? button): About, Rules, Support and Privacy tabs. The text scrolls inside the dialog; the title,
+    // Info dialog (the ? button): About, Rules, FAQs and Privacy tabs. The text scrolls inside the dialog; the title,
     // tab row and Close button stay put. The tab that was open when it closed is the one shown next time (About on a first visit).
     const TABS = {
       about: 'About Playclubs.net',
       rules: 'Clubs Game Rules',
-      support: 'Help and Support',
+      faqs: 'Frequently Asked Questions',
       privacy: 'Privacy Policy',
     };
     const TAB_KEY = 'clubs.infoTab.v1';
@@ -186,7 +186,7 @@
       showTab(a.dataset.tab);
     });
 
-    // Support: the email address is only put together when asked for, so it is not sitting in the page for bots to harvest.
+    // FAQs: the email address is only put together when asked for, so it is not sitting in the page for bots to harvest.
     $('#reveal-email').addEventListener('click', () => {
       const addr = ['support', 'playclubs.net'].join('@');
       const a = document.createElement('a');
