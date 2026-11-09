@@ -7,6 +7,7 @@
   const R = root.ClubsRules;
 
   const $ = (sel, parent) => (parent || document).querySelector(sel);
+  const $$ = (sel, parent) => Array.from((parent || document).querySelectorAll(sel));
   const SUIT_ORDER = R.SUITS; // clubs, diamonds, spades, hearts: black/red alternate after the clubs
   const BASE = 'translate(-50%, -50%)';
   const ORDINAL = ['', '1st', '2nd', '3rd', '4th'];
@@ -132,9 +133,81 @@
     expertSw.addEventListener('click', () => S.set({ expertMode: !S.get().expertMode }));
     S.onChange(render);
 
-    // Rules: the long text scrolls inside the dialog; the title and Close button stay put.
-    const rules = wireDialog('#rules-layer', '#rules-btn', '#rules-close', () => {
+    // Info dialog (the ? button): About, Rules, Support and Privacy tabs. The text scrolls inside the dialog; the title,
+    // tab row and Close button stay put. The tab that was open when it closed is the one shown next time (About on a first visit).
+    const TABS = {
+      about: 'About Playclubs.net',
+      rules: 'Clubs Game Rules',
+      support: 'Help and Support',
+      privacy: 'Privacy Policy',
+    };
+    const TAB_KEY = 'clubs.infoTab.v1';
+    const tabBtns = $$('#rules-tabs [role="tab"]');
+    const panels = $$('#rules-body .tab-panel');
+
+    function savedTab() {
+      try {
+        const t = window.localStorage.getItem(TAB_KEY);
+        return Object.prototype.hasOwnProperty.call(TABS, t) ? t : 'about';
+      } catch (e) { return 'about'; }
+    }
+    function showTab(name, opts) {
+      if (!Object.prototype.hasOwnProperty.call(TABS, name)) name = 'about';
+      tabBtns.forEach((b) => {
+        const on = b.dataset.tab === name;
+        b.setAttribute('aria-selected', String(on));
+        b.tabIndex = on ? 0 : -1;
+        if (on && opts && opts.focus) b.focus({ preventScroll: true });
+      });
+      panels.forEach((p) => { p.hidden = p.id !== 'tab-' + name; });
+      $('#rules-title').textContent = TABS[name];
+      $('#rules-body').setAttribute('aria-label', TABS[name]);
       $('#rules-body').scrollTop = 0;
+      try { window.localStorage.setItem(TAB_KEY, name); } catch (e) { /* ignore */ }
+    }
+    tabBtns.forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
+    $('#rules-tabs').addEventListener('keydown', (e) => {
+      const i = tabBtns.indexOf(document.activeElement);
+      if (i < 0) return;
+      let n = -1;
+      if (e.key === 'ArrowRight') n = (i + 1) % tabBtns.length;
+      else if (e.key === 'ArrowLeft') n = (i + tabBtns.length - 1) % tabBtns.length;
+      else if (e.key === 'Home') n = 0;
+      else if (e.key === 'End') n = tabBtns.length - 1;
+      if (n < 0) return;
+      e.preventDefault();
+      showTab(tabBtns[n].dataset.tab, { focus: true });
+    });
+    // Links inside the text that jump to another tab (for example "rules").
+    $('#rules-body').addEventListener('click', (e) => {
+      const a = e.target.closest('a.tab-link');
+      if (!a) return;
+      e.preventDefault();
+      showTab(a.dataset.tab);
+    });
+
+    // Support: the email address is only put together when asked for, so it is not sitting in the page for bots to harvest.
+    $('#reveal-email').addEventListener('click', () => {
+      const addr = ['support', 'playclubs.net'].join('@');
+      const a = document.createElement('a');
+      a.href = 'mailto:' + addr + '?subject=' + encodeURIComponent('Clubs');
+      a.textContent = addr;
+      const slot = $('#email-slot');
+      slot.textContent = '';
+      slot.appendChild(a);
+      $('#reveal-email').hidden = true;
+    });
+
+    // Donate: stays switched off until a real https link is put in the button's href in index.html.
+    const donate = $('#donate-link');
+    if (!/^https:\/\//.test(donate.getAttribute('href') || '')) {
+      donate.setAttribute('aria-disabled', 'true');
+      donate.title = 'Donation link coming soon';
+      donate.addEventListener('click', (e) => e.preventDefault());
+    }
+
+    const rules = wireDialog('#rules-layer', '#rules-btn', '#rules-close', () => {
+      showTab(savedTab());
     });
     UI.openRules = rules.open;
     UI.closeRules = rules.close;
