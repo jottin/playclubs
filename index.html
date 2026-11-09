@@ -188,11 +188,11 @@
       <div class="dialog wide" id="rules-dialog" role="dialog" aria-modal="true" aria-labelledby="rules-title">
         <h3 class="sheet-title" id="rules-title">About Playclubs.net</h3>
 
-        <!-- Tabs: About, Rules, Support, Privacy. The one open when the dialog closes is the one shown next time. -->
-        <div id="rules-tabs" role="tablist" aria-label="About, rules, support and privacy">
+        <!-- Tabs: About, Rules, FAQs, Privacy. The one open when the dialog closes is the one shown next time. -->
+        <div id="rules-tabs" role="tablist" aria-label="About, rules, frequently asked questions and privacy">
           <button type="button" role="tab" id="tab-btn-about" data-tab="about" aria-controls="tab-about" aria-selected="true">About</button>
           <button type="button" role="tab" id="tab-btn-rules" data-tab="rules" aria-controls="tab-rules" aria-selected="false" tabindex="-1">Rules</button>
-          <button type="button" role="tab" id="tab-btn-support" data-tab="support" aria-controls="tab-support" aria-selected="false" tabindex="-1">Support</button>
+          <button type="button" role="tab" id="tab-btn-faqs" data-tab="faqs" aria-controls="tab-faqs" aria-selected="false" tabindex="-1">FAQs</button>
           <button type="button" role="tab" id="tab-btn-privacy" data-tab="privacy" aria-controls="tab-privacy" aria-selected="false" tabindex="-1">Privacy</button>
         </div>
 
@@ -207,9 +207,8 @@
             <p>Clubs is free to play and has no ads. If you enjoy it, a donation helps keep it online. Donations are voluntary and unlock nothing in the game.</p>
             <p class="tab-action"><a id="donate-link" class="btn" href="PAYPAL_LINK_HERE" target="_blank" rel="noopener noreferrer">Donate with PayPal</a></p>
 
-            <h4>Good to know</h4>
-            <p>Made by visualcraftsman. Version 1.</p>
-            <p>Add Clubs to your home screen to play full-screen. Once it has loaded, it works without a connection too.</p>
+            <h4>Credits</h4>
+            <p>Made with loving care by <a target="_blank" href="https://x.com/jottin">jottin</a>. Latest release is version 1.</p>
           </div>
 
           <!-- RULES (the original rules text, unchanged) -->
@@ -275,8 +274,8 @@
           </ul>
           </div>
 
-          <!-- SUPPORT -->
-          <div class="tab-panel" id="tab-support" role="tabpanel" aria-labelledby="tab-btn-support" hidden>
+          <!-- FAQS -->
+          <div class="tab-panel" id="tab-faqs" role="tabpanel" aria-labelledby="tab-btn-faqs" hidden>
             <h4>What is Clubs?</h4>
             <p>Clubs is a trick-taking card game in which club cards decide the score. In a standard game where you face off against 3 opponents, all 4 players fight to win points. Points can be won or lost through each round as players hit or miss their safe zones. End the round inside your zone to win points. Miss it, and every club costs you!</p>
 
@@ -296,10 +295,10 @@
             <p>Clubs uses only part of the deck (28 cards with four players). Because nobody knows which cards were set aside, you can&rsquo;t count cards to know how many clubs are left, and the same game works with 3, 4 or 5 players.</p>
 
             <h4>Does Clubs work offline?</h4>
-            <p>Yes. Once the game has loaded, it is saved on your device and works without a connection. Add it to your home screen to play full-screen.</p>
+            <p>Yes. Once the game has loaded, it is saved on your device and will work without an internet connection. Add it to your home screen to play in full-screen mode!</p>
 
-            <h4>Contact</h4>
-            <p>Have a question or found a problem? Send an email, or report a bug on GitHub.</p>
+            <h4>How to get in touch?</h4>
+            <p>Have a question or found a problem? Send an email or report a bug on GitHub.</p>
             <p class="tab-action">
               <button type="button" id="reveal-email" class="btn btn-quiet">Show email address</button>
               <span id="email-slot"></span>
@@ -309,21 +308,21 @@
 
           <!-- PRIVACY -->
           <div class="tab-panel" id="tab-privacy" role="tabpanel" aria-labelledby="tab-btn-privacy" hidden>
-            <p>Playclubs.net is a free card game you can play without an account. We don&rsquo;t ask for your name or email address to play, and we keep what we learn about your visit to a minimum. This page explains exactly what that is.</p>
+            <p>Playclubs.net is a <strong>free card game</strong> you can play without an account. We don&rsquo;t ask for your name or email address. We don&rsquo;t require a credit card or trick you into a subscription plan. We don&rsquo;t care what you ate for breakfast. We only keep what is necessary to play clubs! This page explains exactly what that is&mdash;which isn&rsquo;t much :-)</p>
 
             <h4>1. Game data stored on your device</h4>
-            <p>Clubs saves a few settings in your browser&rsquo;s local storage so they are remembered next time: sound on or off, Confirmation and Tips on or off, Expert Mode on or off, and the last tab you opened in this window. This data stays on your device. It is never sent to us or to anyone else. You can erase it at any time by clearing this site&rsquo;s data in your browser. The game also keeps its own files in your browser&rsquo;s cache so it loads quickly and works offline.</p>
+            <p>Clubs saves a few settings in your browser&rsquo;s local storage so they are remembered for later use: sound, confirmation settings, play mode, and the last tab you opened in this window. This data stays on your device. It is never sent to us or to anyone else. You can erase it at any time by clearing this site&rsquo;s data in your browser. The game also keeps its own files in your browser&rsquo;s cache so it loads quickly and works offline.</p>
 
             <h4>2. Cookies</h4>
-            <p>Clubs does not set any cookies. It does not use advertising or analytics tools.</p>
+            <p>Clubs does not set any cookies. It does not use advertising or analytics tools. Hooray!</p>
 
             <h4>3. Hosting and links to other sites</h4>
             <p>Clubs is hosted on GitHub Pages. Like any web host, GitHub may log technical details, such as your IP address, when your browser asks for the page. See <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub&rsquo;s privacy statement</a>. If you follow the Donate link, PayPal handles your payment under its own privacy policy, and GitHub and PayPal may set their own cookies on their own pages.</p>
 
-            <h4>4. If you contact us</h4>
-            <p>If you email support, we see your email address and your message. We use them only to reply.</p>
+            <h4>4. Contacting us</h4>
+            <p>If you email support, we see your email address and your message. We use them only to reply. We don&rsquo;t send you any annoying subscription emails. Amen!</p>
 
-            <p class="tab-note">Last updated: November 9, 2026.</p>
+            <p class="tab-note">Last updated: November 2026.</p>
           </div>
 
         </div>
