@@ -509,7 +509,7 @@ button { font: inherit; color: inherit; }
 .dialog.wide { overflow: auto; }
 
 .dialog h3 { margin: 0 0 6px; font-size: 21px; font-weight: 700; line-height: 1.25; }
-.dialog p { margin: 10px; font-size: 15px; line-height: 1.45; color: rgba(255, 255, 255, 0.72); }
+.dialog p { margin: 10px; font-size: 15px; line-height: 1.45; color: rgba(255, 255, 255, 0.72); text-wrap: pretty; }
 
 .btn {
   min-height: 46px;
@@ -892,6 +892,7 @@ a.btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; filter: none; }
 #rules-body .btn-quiet { min-height: 38px; padding: 8px 20px; font-size: 14px; background: rgba(255, 255, 255, 0.12); }
 .tab-note { font-size: 13px; color: var(--muted); }
 #donate-link {
+  background: #178c4e;
   border-radius: 5px;
   font-size: 15px;
   min-height: auto;
