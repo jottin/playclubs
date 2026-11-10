@@ -853,7 +853,7 @@ button { font: inherit; color: inherit; }
 #rules-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 999px; border: 2px solid var(--panel); }
 #rules-body:focus-visible { outline: 3px solid #22d3ee; outline-offset: -3px; }
 #rules-body h4 { margin: 20px 0 6px; font-size: 16px; font-weight: 700; color: #fff; }
-#rules-body p, #rules-body li { margin: 0 0 10px; font-size: 14.5px; line-height: 1.5; color: rgba(255, 255, 255, 0.78); }
+#rules-body p, #rules-body li { margin: 0 0 10px; font-size: 15px; line-height: 1.5; color: rgba(255, 255, 255, 0.78); }
 #rules-body b { color: #fff; }
 #rules-body ul, #rules-body ol { margin: 0 0 10px; padding-left: 22px; }
 #rules-body li { margin-bottom: 6px; }
