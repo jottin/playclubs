@@ -423,7 +423,7 @@
         const ty = target.top + target.height / 2 - (r.top + r.height / 2);
         return el.animate(
           [
-            { transform: BASE, opacity: 1, offset: 0, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' },
+            { transform: tr(0, 0, 0), opacity: 1, offset: 0, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }, // same function list as the later frames, so browsers interpolate each function instead of whole matrices
             { transform: tr(pile[i].x, pile[i].y, pile[i].rot), opacity: 1, offset: split, easing: 'cubic-bezier(0.5, 0, 0.75, 0.4)' },
             { opacity: 1, offset: split + (1 - split) * 0.7 },
             { transform: tr(tx, ty, pile[i].rot, 0.4), opacity: 0, offset: 1 },
