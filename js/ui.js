@@ -411,19 +411,11 @@
     });
     const tr = (x, y, rot, scale) => BASE + ' translate(' + x + 'px,' + y + 'px) rotate(' + rot + 'deg) scale(' + (scale || 1) + ')';
 
-    // 1. slide inward into a stack
-    await Promise.all(
-      cards.map((el, i) =>
-        el.animate(
-          [{ transform: BASE }, { transform: tr(pile[i].x, pile[i].y, pile[i].rot) }],
-          { duration: dur(380), easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' }
-        ).finished.catch(() => {})
-      )
-    );
-
-    // 2. immediately slide to the winner's scorecard
-    if (window.ClubsSound) window.ClubsSound.play('shhhuuu');
+    // One animation per card (stack, then slide to the scorecard), so there is no hand-off between two animations.
     const target = seatRect(winnerSeat);
+    const d1 = dur(380), d2 = dur(480);
+    const split = d1 / (d1 + d2);
+    if (window.ClubsSound) setTimeout(() => window.ClubsSound.play('shhhuuu'), d1);
     await Promise.all(
       cards.map((el, i) => {
         const r = rects[i];
@@ -431,11 +423,12 @@
         const ty = target.top + target.height / 2 - (r.top + r.height / 2);
         return el.animate(
           [
-            { transform: tr(pile[i].x, pile[i].y, pile[i].rot), opacity: 1, offset: 0 },
-            { opacity: 1, offset: 0.7 },
+            { transform: BASE, opacity: 1, offset: 0, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' },
+            { transform: tr(pile[i].x, pile[i].y, pile[i].rot), opacity: 1, offset: split, easing: 'cubic-bezier(0.5, 0, 0.75, 0.4)' },
+            { opacity: 1, offset: split + (1 - split) * 0.7 },
             { transform: tr(tx, ty, pile[i].rot, 0.4), opacity: 0, offset: 1 },
           ],
-          { duration: dur(480), easing: 'cubic-bezier(0.5, 0, 0.75, 0.4)', fill: 'forwards' }
+          { duration: d1 + d2, fill: 'forwards' }
         ).finished.catch(() => {});
       })
     );
