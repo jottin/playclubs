@@ -36,33 +36,6 @@
   UI.sleep = (ms) =>
     new Promise((resolve) => setTimeout(resolve, Math.max(0, ms * UI.timeScale))).then(() => pauseGate);
 
-
-  /* ---------- coming back from the background ---------- */
-
-  // iOS can throw away the layers it drew for the scorecards while the app is in the background, and they come back blank. When the page
-  // becomes visible again, nudge each scorecard so the browser has to repaint it. Nothing is hidden, so nothing blinks.
-  function repaintCards() {
-    const cards = $$('.scorecard');
-    cards.forEach((el) => (el.style.opacity = '0.99'));
-    void document.body.offsetHeight; // apply the change now
-    requestAnimationFrame(() => requestAnimationFrame(() => cards.forEach((el) => el.style.removeProperty('opacity'))));
-  }
-
-  let resumeTimer = null;
-  function onResume() {
-    clearTimeout(resumeTimer);
-    repaintCards();
-    resumeTimer = setTimeout(repaintCards, 500); // iOS can be slow to restore things
-  }
-
-  function watchResume() {
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') onResume();
-    });
-    window.addEventListener('pageshow', onResume);
-    document.addEventListener('resume', onResume);
-  }
-
   /* ---------- setup ---------- */
 
   UI.init = function (handlers) {
