@@ -409,7 +409,10 @@
       const j = jitter[i % jitter.length];
       return { x: cx - (r.left + r.width / 2) + j[0], y: cy - (r.top + r.height / 2) + j[1], rot: j[2] };
     });
-    const tr = (x, y, rot, scale) => BASE + ' translate(' + x + 'px,' + y + 'px) rotate(' + rot + 'deg) scale(' + (scale || 1) + ')';
+    // The cards are centred with translate(-50%, -50%). Some WebKit builds (Chrome on iPad) resolve that percentage wrongly on the first animation
+    // frame, which shows up as a jump to the south-east, so the animation uses the same offset in pixels instead.
+    const pxBase = (el) => 'translate(' + -el.offsetWidth / 2 + 'px,' + -el.offsetHeight / 2 + 'px)';
+    const tr = (el, x, y, rot, scale) => pxBase(el) + ' translate(' + x + 'px,' + y + 'px) rotate(' + rot + 'deg) scale(' + (scale || 1) + ')';
 
     // One animation per card (stack, then slide to the scorecard), so there is no hand-off between two animations.
     const target = seatRect(winnerSeat);
@@ -423,10 +426,10 @@
         const ty = target.top + target.height / 2 - (r.top + r.height / 2);
         return el.animate(
           [
-            { transform: tr(0, 0, 0), opacity: 1, offset: 0, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }, // same function list as the later frames, so browsers interpolate each function instead of whole matrices
-            { transform: tr(pile[i].x, pile[i].y, pile[i].rot), opacity: 1, offset: split, easing: 'cubic-bezier(0.5, 0, 0.75, 0.4)' },
+            { transform: tr(el, 0, 0, 0), opacity: 1, offset: 0, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }, // same function list as the later frames, so browsers interpolate each function instead of whole matrices
+            { transform: tr(el, pile[i].x, pile[i].y, pile[i].rot), opacity: 1, offset: split, easing: 'cubic-bezier(0.5, 0, 0.75, 0.4)' },
             { opacity: 1, offset: split + (1 - split) * 0.7 },
-            { transform: tr(tx, ty, pile[i].rot, 0.4), opacity: 0, offset: 1 },
+            { transform: tr(el, tx, ty, pile[i].rot, 0.4), opacity: 0, offset: 1 },
           ],
           { duration: d1 + d2, fill: 'forwards' }
         ).finished.catch(() => {});
