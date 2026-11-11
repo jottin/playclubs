@@ -10,6 +10,9 @@
   const $$ = (sel, parent) => Array.from((parent || document).querySelectorAll(sel));
   const SUIT_ORDER = R.SUITS; // clubs, diamonds, spades, hearts: black/red alternate after the clubs
   const BASE = 'translate(-50%, -50%)';
+  // The cards are centred with translate(-50%, -50%). Some WebKit builds (Chrome on iPad) resolve that percentage wrongly on the first
+  // animation frame, so animated transforms use the same offset in pixels instead.
+  const pxBase = (el) => 'translate(' + -el.offsetWidth / 2 + 'px,' + -el.offsetHeight / 2 + 'px)';
   const ORDINAL = ['', '1st', '2nd', '3rd', '4th'];
 
   const els = {};
@@ -378,14 +381,27 @@
     const dy = from.top + from.height / 2 - (to.top + to.height / 2);
     const scale = fromRect ? fromRect.width / to.width : 0.7;
 
+    const pb = pxBase(el);
+    const startTransform = pb + ' translate(' + dx + 'px,' + dy + 'px) scale(' + scale + ')';
+    const startOpacity = fromRect ? 1 : 0.15;
+    // Paint the starting frame right away. Some browsers start an animation a frame late and would flash the card at its final slot first.
+    el.style.transform = startTransform;
+    el.style.opacity = String(startOpacity);
+
     const anim = el.animate(
       [
-        { transform: BASE + ' translate(' + dx + 'px,' + dy + 'px) scale(' + scale + ')', opacity: fromRect ? 1 : 0.15 },
-        { transform: BASE, opacity: 1 },
+        { transform: startTransform, opacity: startOpacity },
+        { transform: pb + ' translate(0px,0px) scale(1)', opacity: 1 },
       ],
-      { duration: dur(480), easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+      { duration: dur(480), easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' }
     );
-    return anim.finished.catch(() => {});
+    return anim.finished
+      .then(() => {
+        el.style.removeProperty('transform'); // back to the stylesheet position, which is identical to the last frame
+        el.style.removeProperty('opacity');
+        anim.cancel();
+      })
+      .catch(() => {});
   };
 
   // Mark the card that won the book with .is-winner so the stylesheet can highlight it. It stays until the pile gathers.
@@ -409,9 +425,6 @@
       const j = jitter[i % jitter.length];
       return { x: cx - (r.left + r.width / 2) + j[0], y: cy - (r.top + r.height / 2) + j[1], rot: j[2] };
     });
-    // The cards are centred with translate(-50%, -50%). Some WebKit builds (Chrome on iPad) resolve that percentage wrongly on the first animation
-    // frame, which shows up as a jump to the south-east, so the animation uses the same offset in pixels instead.
-    const pxBase = (el) => 'translate(' + -el.offsetWidth / 2 + 'px,' + -el.offsetHeight / 2 + 'px)';
     const tr = (el, x, y, rot, scale) => pxBase(el) + ' translate(' + x + 'px,' + y + 'px) rotate(' + rot + 'deg) scale(' + (scale || 1) + ')';
 
     // One animation per card (stack, then slide to the scorecard), so there is no hand-off between two animations.
