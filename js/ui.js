@@ -85,7 +85,6 @@
     els.cards = {};
     R.SEATS.forEach((seat) => (els.cards[seat] = $('.scorecard[data-seat="' + seat + '"]')));
     initSettings();
-    watchResume();
   };
 
   /* ---------- Settings and Rules dialogs ---------- */
