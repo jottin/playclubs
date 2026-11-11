@@ -879,7 +879,7 @@ button { font: inherit; color: inherit; }
 
 #rules-tabs { flex: none; display: flex; gap: 4px; padding: 8px 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); overflow-x: auto; scrollbar-width: none; }
 #rules-tabs::-webkit-scrollbar { display: none; }
-#rules-tabs [role="tab"] { flex: 1 1 0; min-width: max-content; padding: 9px 12px 10px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 1em; font-weight: 600; cursor: pointer; }
+#rules-tabs [role="tab"] { flex: 1 1 0; min-width: max-content; padding: 10px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 1em; font-weight: 600; cursor: pointer; }
 #rules-tabs [role="tab"]:hover { color: #fff; }
 #rules-tabs [role="tab"][aria-selected="true"] { color: #fff; border-bottom-color: #6f8cff; }
 #rules-tabs [role="tab"]:focus-visible { outline: 3px solid #22d3ee; outline-offset: -3px; border-radius: 6px; }
@@ -978,8 +978,8 @@ a.btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; filter: none; }
   border-radius: calc(var(--ow) * 0.05);
   width: 100%;
   height: 100%;
-  mix-blend-mode: color-dodge;
-  opacity: .5;
+  mix-blend-mode: hard-light;
+  opacity: .75;
   position: absolute;
   top: 0;
   right: 0;
