@@ -425,7 +425,10 @@
       const j = jitter[i % jitter.length];
       return { x: cx - (r.left + r.width / 2) + j[0], y: cy - (r.top + r.height / 2) + j[1], rot: j[2] };
     });
-    const tr = (el, x, y, rot, scale) => pxBase(el) + ' translate(' + x + 'px,' + y + 'px) rotate(' + rot + 'deg) scale(' + (scale || 1) + ')';
+    // The seat tilt comes from the CSS `rotate` property. WebKit can mishandle that property next to an animated transform, so for the
+    // animation it is turned off and applied as the first function of the transform, which gives exactly the same result.
+    const tilt = new Map(cards.map((el) => [el, parseFloat(getComputedStyle(el).rotate) || 0]));
+    const tr = (el, x, y, rot, scale) => 'rotate(' + tilt.get(el) + 'deg) ' + pxBase(el) + ' translate(' + x + 'px,' + y + 'px) rotate(' + rot + 'deg) scale(' + (scale || 1) + ')';
 
     // One animation per card (stack, then slide to the scorecard), so there is no hand-off between two animations.
     const target = seatRect(winnerSeat);
@@ -437,6 +440,8 @@
         const r = rects[i];
         const tx = target.left + target.width / 2 - (r.left + r.width / 2);
         const ty = target.top + target.height / 2 - (r.top + r.height / 2);
+        el.style.rotate = 'none';
+        el.style.transform = tr(el, 0, 0, 0); // the first frame, painted at once even if the animation starts a frame late
         return el.animate(
           [
             { transform: tr(el, 0, 0, 0), opacity: 1, offset: 0, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }, // same function list as the later frames, so browsers interpolate each function instead of whole matrices
@@ -444,7 +449,7 @@
             { opacity: 1, offset: split + (1 - split) * 0.7 },
             { transform: tr(el, tx, ty, pile[i].rot, 0.4), opacity: 0, offset: 1 },
           ],
-          { duration: d1 + d2, fill: 'forwards' }
+          { duration: d1 + d2, fill: 'both' }
         ).finished.catch(() => {});
       })
     );
