@@ -36,6 +36,39 @@
   UI.sleep = (ms) =>
     new Promise((resolve) => setTimeout(resolve, Math.max(0, ms * UI.timeScale))).then(() => pauseGate);
 
+
+  /* ---------- coming back from the background ---------- */
+
+  // iOS can throw away the blurred (backdrop-filter) layers while the app is in the background, and the scorecards and card fans come back
+  // blank or smeared. When the page becomes visible again, switch the blur off for a moment and back on so the browser rebuilds them.
+  function rebuildLayers() {
+    const cards = $$('.scorecard');
+    const fans = $$('.opp-hand');
+    cards.forEach((el) => {
+      el.style.webkitBackdropFilter = 'none';
+      el.style.backdropFilter = 'none';
+    });
+    fans.forEach((el) => (el.style.display = 'none'));
+    void document.body.offsetHeight; // apply the change now
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        fans.forEach((el) => (el.style.display = ''));
+        cards.forEach((el) => {
+          el.style.removeProperty('-webkit-backdrop-filter');
+          el.style.removeProperty('backdrop-filter');
+        });
+      })
+    );
+  }
+
+  function watchResume() {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') rebuildLayers();
+    });
+    window.addEventListener('pageshow', rebuildLayers);
+    document.addEventListener('resume', rebuildLayers);
+  }
+
   /* ---------- setup ---------- */
 
   UI.init = function (handlers) {
@@ -58,6 +91,7 @@
     els.cards = {};
     R.SEATS.forEach((seat) => (els.cards[seat] = $('.scorecard[data-seat="' + seat + '"]')));
     initSettings();
+    watchResume();
   };
 
   /* ---------- Settings and Rules dialogs ---------- */
@@ -395,13 +429,15 @@
       ],
       { duration: dur(480), easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' }
     );
-    return anim.finished
-      .then(() => {
-        el.style.removeProperty('transform'); // back to the stylesheet position, which is identical to the last frame
-        el.style.removeProperty('opacity');
+    // Tidy up whether the animation finished or was cancelled (the browser can cancel animations while the app is in the background).
+    const settle = () => {
+      el.style.removeProperty('transform'); // back to the stylesheet position, which is identical to the last frame
+      el.style.removeProperty('opacity');
+      try {
         anim.cancel();
-      })
-      .catch(() => {});
+      } catch (e) {}
+    };
+    return anim.finished.then(settle, settle);
   };
 
   // Mark the card that won the book with .is-winner so the stylesheet can highlight it. It stays until the pile gathers.
