@@ -39,38 +39,20 @@
 
   /* ---------- coming back from the background ---------- */
 
-  // iOS can throw away the blurred (backdrop-filter) layers while the app is in the background, and the scorecards come back with their
-  // contents missing. When the page becomes visible again, switch the blur off, nudge the cards so the browser has to repaint them, and
-  // switch the blur back on. iOS can be slow to restore things, so it is repeated a little later.
-  function rebuildLayers() {
+  // iOS can throw away the layers it drew for the scorecards while the app is in the background, and they come back blank. When the page
+  // becomes visible again, nudge each scorecard so the browser has to repaint it. Nothing is hidden, so nothing blinks.
+  function repaintCards() {
     const cards = $$('.scorecard');
-    const fans = $$('.opp-hand');
-    cards.forEach((el) => {
-      el.classList.add('relayer');
-      el.style.webkitBackdropFilter = 'none';
-      el.style.backdropFilter = 'none';
-      el.style.opacity = '0.99';
-    });
-    fans.forEach((el) => (el.style.display = 'none'));
+    cards.forEach((el) => (el.style.opacity = '0.99'));
     void document.body.offsetHeight; // apply the change now
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        fans.forEach((el) => (el.style.display = ''));
-        cards.forEach((el) => {
-          el.classList.remove('relayer');
-          el.style.removeProperty('-webkit-backdrop-filter');
-          el.style.removeProperty('backdrop-filter');
-          el.style.removeProperty('opacity');
-        });
-      })
-    );
+    requestAnimationFrame(() => requestAnimationFrame(() => cards.forEach((el) => el.style.removeProperty('opacity'))));
   }
 
-  let resumeTimers = [];
+  let resumeTimer = null;
   function onResume() {
-    resumeTimers.forEach(clearTimeout);
-    rebuildLayers();
-    resumeTimers = [400, 1200].map((ms) => setTimeout(rebuildLayers, ms));
+    clearTimeout(resumeTimer);
+    repaintCards();
+    resumeTimer = setTimeout(repaintCards, 500); // iOS can be slow to restore things
   }
 
   function watchResume() {
