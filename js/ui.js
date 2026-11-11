@@ -39,14 +39,17 @@
 
   /* ---------- coming back from the background ---------- */
 
-  // iOS can throw away the blurred (backdrop-filter) layers while the app is in the background, and the scorecards and card fans come back
-  // blank or smeared. When the page becomes visible again, switch the blur off for a moment and back on so the browser rebuilds them.
+  // iOS can throw away the blurred (backdrop-filter) layers while the app is in the background, and the scorecards come back with their
+  // contents missing. When the page becomes visible again, switch the blur off, nudge the cards so the browser has to repaint them, and
+  // switch the blur back on. iOS can be slow to restore things, so it is repeated a little later.
   function rebuildLayers() {
     const cards = $$('.scorecard');
     const fans = $$('.opp-hand');
     cards.forEach((el) => {
+      el.classList.add('relayer');
       el.style.webkitBackdropFilter = 'none';
       el.style.backdropFilter = 'none';
+      el.style.opacity = '0.99';
     });
     fans.forEach((el) => (el.style.display = 'none'));
     void document.body.offsetHeight; // apply the change now
@@ -54,19 +57,28 @@
       requestAnimationFrame(() => {
         fans.forEach((el) => (el.style.display = ''));
         cards.forEach((el) => {
+          el.classList.remove('relayer');
           el.style.removeProperty('-webkit-backdrop-filter');
           el.style.removeProperty('backdrop-filter');
+          el.style.removeProperty('opacity');
         });
       })
     );
   }
 
+  let resumeTimers = [];
+  function onResume() {
+    resumeTimers.forEach(clearTimeout);
+    rebuildLayers();
+    resumeTimers = [400, 1200].map((ms) => setTimeout(rebuildLayers, ms));
+  }
+
   function watchResume() {
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') rebuildLayers();
+      if (document.visibilityState === 'visible') onResume();
     });
-    window.addEventListener('pageshow', rebuildLayers);
-    document.addEventListener('resume', rebuildLayers);
+    window.addEventListener('pageshow', onResume);
+    document.addEventListener('resume', onResume);
   }
 
   /* ---------- setup ---------- */
