@@ -65,12 +65,16 @@
   <!-- Preloader: shown until game.js has the board ready (removed by game.js) -->
   <div id="preloader" aria-hidden="true">
     <div class="preloader-club">
+      <svg class="preloader-glow" aria-hidden="true" viewBox="-12 -12 264 264">
+        <use fill="#072316" stroke="#072316" stroke-width="10" stroke-linejoin="round" href="#s-clubs" x="0" y="0" width="240" height="240"/>
+      </svg>
       <svg class="preloader-fill" aria-hidden="true" viewBox="-12 -12 264 264">
         <use fill="url(#club-gradient)" href="#s-clubs" x="0" y="0" width="240" height="240"/>
         <use class="preloader-shade" fill="#000" href="#s-clubs" x="0" y="0" width="240" height="240"/>
       </svg>
       <!-- Border: a rotating gradient seen only through a club-shaped outline (the mask is in the CSS), drawn outside the club so it adds to the shape -->
       <div class="preloader-ring"><div class="preloader-spin"></div></div>
+      <div class="preloader-label">Loading</div>
     </div>
   </div>
   <script>window.requestAnimationFrame(function () { window.__preShown = window.performance.now(); });</script>
