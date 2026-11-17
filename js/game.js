@@ -111,6 +111,22 @@
     return done;
   }
 
+  /* ---------- progress (kept on this device) ---------- */
+
+  // How many games this player has finished, and whether the one-time "Enjoying the game?" dialog has been shown.
+  // Without browser storage the numbers still count for as long as the page stays open.
+  const PROGRESS_KEY = 'clubs.progress.v1';
+  const ENJOY_AFTER_GAMES = 2; // shown when the next game is dealt after this many finished games
+  const progress = { games: 0, enjoyShown: false };
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(PROGRESS_KEY) || 'null');
+    if (saved && Number.isFinite(saved.games) && saved.games >= 0) progress.games = Math.floor(saved.games);
+    if (saved && saved.enjoyShown === true) progress.enjoyShown = true;
+  } catch (e) { /* private window or blocked storage */ }
+  function saveProgress() {
+    try { window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch (e) { /* ignore */ }
+  }
+
   /* ---------- rounds, games and scores on screen ---------- */
 
   // Games are always 4 rounds. Beginner plays one; Expert Mode plays two and adds them up.
@@ -194,6 +210,10 @@
     }
 
     const fin = game.finishRound();
+    if (fin.gameComplete) {
+      progress.games += 1; // a game (4 rounds) is finished: Beginner is one per play, Expert Mode two
+      saveProgress();
+    }
     // Show what the round produced first; any player who reached 0 or 200 then bounces back to 100.
     R.SEATS.forEach((seat) => setGameScore(seat, fin.before[seat], true));
     await UI.sleep(700);
@@ -283,6 +303,14 @@
     const dealt = UI.waitForDeal();
     if (AUTO) setTimeout(() => document.getElementById('deal-btn').click(), 50);
     await dealt;
+    // Once, at the start of the third game (after two finished games, in either mode): the "Enjoying the game?" dialog.
+    if (!progress.enjoyShown && progress.games >= ENJOY_AFTER_GAMES) {
+      progress.enjoyShown = true;
+      saveProgress();
+      const enjoy = UI.showEnjoyDialog();
+      if (AUTO) setTimeout(() => document.getElementById('enjoy-continue').click(), 250 * UI.timeScale + 5);
+      await enjoy;
+    }
     while (game.state.phase !== 'game-over') await playRound();
 
     UI.setStatus({ round: 'Game over' });

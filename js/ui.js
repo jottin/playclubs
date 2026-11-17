@@ -214,6 +214,15 @@
     });
     UI.openRules = rules.open;
     UI.closeRules = rules.close;
+
+    // Open the help dialog on a given tab and scroll to an element in it (used by the "Enjoying the game?" dialog to point at the contact details).
+    UI.openHelpAt = function (tab, anchorId) {
+      rules.open();
+      showTab(tab);
+      const body = $('#rules-body');
+      const target = anchorId ? document.getElementById(anchorId) : null;
+      if (target) body.scrollTop = target.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop - 8;
+    };
   }
 
   // The Deal button at the start of every game. Resolves when it is tapped (the tap also unlocks browser audio).
@@ -536,6 +545,35 @@
       });
     });
   }
+
+  // "Enjoying the game?": shown once, at the start of the third game. Resolves when the player taps Keep playing.
+  // The tip button copies its link from the About tab's button, so that is the one place the link is set.
+  UI.showEnjoyDialog = function () {
+    const donate = $('#donate-link');
+    const href = donate ? donate.getAttribute('href') || '' : '';
+    const tip = /^https:\/\//.test(href)
+      ? '<p>Clubs is free to play and has no ads. If you enjoy it, a small contribution will help keep it online. Tips are voluntary and only support the game.</p>' +
+        '<p class="enjoy-actions"><a class="btn tip-btn" href="' + href + '" target="_blank" rel="noopener noreferrer">' + (donate.textContent || 'Leave a tip!') + '</a></p>'
+      : '';
+    const html =
+      '<div class="enjoy">' +
+      '<h3 class="sheet-title">Enjoying the game?</h3>' +
+      tip +
+      '<p class="enjoy-note">To leave feedback, tap the help (?) button and scroll to the bottom of <a href="#faq-contact" class="enjoy-faq">FAQs</a>.</p>' +
+      '<button id="enjoy-continue" class="btn" type="button">Keep playing</button>' +
+      '</div>';
+    const done = showModal(html, 'enjoy-continue');
+    // The FAQs link closes this dialog and opens the help dialog at "How to get in touch?".
+    $('.enjoy-faq', els.modal).addEventListener('click', (e) => {
+      e.preventDefault();
+      $('#enjoy-continue').click();
+      UI.openHelpAt('faqs', 'faq-contact');
+    });
+    const onKey = (e) => { if (e.key === 'Escape') $('#enjoy-continue').click(); };
+    document.addEventListener('keydown', onKey);
+    done.then(() => document.removeEventListener('keydown', onKey));
+    return done;
+  };
 
   // Colour key for the round points: green inside the zone, red outside it, blue when the round caused a bounce back to 100.
   const LEGEND =
