@@ -933,6 +933,12 @@ a.btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; filter: none; }
 .enjoy-note { border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin: 0 0 20px !important; padding: 10px 20px 20px !important; }
 .enjoy-note a { color: #8ab4ff; }
 
+@media (max-height: 480px) {
+  .enjoy .sheet-title { padding: 0 20px 16px; font-size: 20px; }
+  .enjoy p:first-of-type { margin: 12px 0 2px; padding: 0 20px; font-size: 14px; line-height: 1.4; }
+  .enjoy-note { margin: 0 0 16px !important; padding: 0px 20px 12px !important; font-size: 13px; line-height: 1.4; }
+}
+
 /* ---------- Book confirmation dialog ---------- */
 
 /* The hand area is only 25% of the screen, so the dialog can be taller than it. Instead of being centred (and
