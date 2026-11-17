@@ -133,17 +133,28 @@ button { font: inherit; color: inherit; }
 .preloader-club {
   width: calc(var(--bw) * 1.8);
   height: calc(var(--bw) * 1.8);
-  filter: brightness(1) drop-shadow(0 1.5px 0 rgb(255, 255, 255, 0.25));
+  filter: drop-shadow(0 1.5px 0 rgb(255, 255, 255, 0.25));
   animation: preloader-pulse 0.8s ease-in-out infinite;
 }
 
+/* Add a club on top for dark opacity pulse */
+.preloader-shade {
+  opacity: 0;
+  animation: preloader-shade 0.8s ease-in-out infinite;
+}
+
 @keyframes preloader-pulse {
-  0%, 100% { transform: scale(1); filter: brightness(1) drop-shadow(0 1.5px 0 rgb(255, 255, 255, 0.25)); }
-  50% { transform: scale(1.08); filter: brightness(.65) drop-shadow(0 1.5px 0 rgb(255, 255, 255, 0.25)); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes preloader-shade {
+  0%, 100% { opacity: 0; }
+  50% { opacity: .35; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .preloader-club { animation: none; }
+  .preloader-club, .preloader-shade { animation: none; }
 }
 
 /* ---------- Status area ---------- */
