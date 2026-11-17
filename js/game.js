@@ -322,7 +322,7 @@
   }
 
   // The preloader (index.html) stays up for a moment so it never just flashes, then fades out and is removed.
-  const PRELOAD_MIN_MS = 600;
+  const PRELOAD_MIN_MS = 800;
   function hidePreloader() {
     const el = document.getElementById('preloader');
     if (!el) return;
