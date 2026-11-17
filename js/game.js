@@ -326,7 +326,10 @@
   function hidePreloader() {
     const el = document.getElementById('preloader');
     if (!el) return;
-    const wait = AUTO ? 0 : Math.max(0, PRELOAD_MIN_MS - window.performance.now());
+    // Count the minimum from when the preloader was first painted (see index.html), not from the start of the page load.
+    const now = window.performance.now();
+    const shownFor = now - (typeof window.__preShown === 'number' ? window.__preShown : now);
+    const wait = AUTO ? 0 : Math.max(0, PRELOAD_MIN_MS - shownFor);
     setTimeout(() => {
       el.classList.add('done');
       setTimeout(() => el.remove(), 600);
