@@ -192,8 +192,8 @@ button { font: inherit; color: inherit; }
 }
 
 @keyframes preloader-glow {
-  0%, 100% { opacity: .3; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0; scale: 1.1; }
 }
 
 @keyframes preloader-shade {
