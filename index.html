@@ -64,8 +64,9 @@
 
   <!-- Preloader: shown until game.js has the board ready (removed by game.js) -->
   <div id="preloader" aria-hidden="true">
-    <svg class="preloader-club" aria-hidden="true"><use fill="url(#club-gradient)" href="#s-clubs"/></svg>
+    <svg class="preloader-club" aria-hidden="true"><use fill="url(#club-gradient)" href="#s-clubs"/><use class="preloader-shade" fill="#000" href="#s-clubs"/></svg>
   </div>
+  <script>window.requestAnimationFrame(function () { window.__preShown = window.performance.now(); });</script>
 
   <div id="app">
 
