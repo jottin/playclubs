@@ -321,9 +321,22 @@
     return runGame();
   }
 
+  // The preloader (index.html) stays up for a moment so it never just flashes, then fades out and is removed.
+  const PRELOAD_MIN_MS = 600;
+  function hidePreloader() {
+    const el = document.getElementById('preloader');
+    if (!el) return;
+    const wait = AUTO ? 0 : Math.max(0, PRELOAD_MIN_MS - window.performance.now());
+    setTimeout(() => {
+      el.classList.add('done');
+      setTimeout(() => el.remove(), 600);
+    }, wait);
+  }
+
   UI.init({ onHandClick: onHandClick });
   // Changing the mode restarts the game when Settings closes (see ui.js), so nothing here has to react to it.
   UI.setStatus({ lead: 'Dealing\u2026' });
+  hidePreloader();
   runGame().catch((err) => {
     console.error(err);
     UI.setStatus({ lead: 'Something went wrong - see the console.' });
