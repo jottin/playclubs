@@ -106,7 +106,7 @@
     const AC = root.AudioContext || root.webkitAudioContext;
     if (!AC) return null;
     try {
-      ctx = new AC();
+      ctx = new AC({ latencyHint: 'interactive' }); // smallest output delay, so a tick lands with the visual it belongs to
       master = ctx.createGain();
       master.gain.value = Sound.LEVEL;
       master.connect(ctx.destination);
@@ -121,10 +121,22 @@
     return !Sound.suppressed && (!S || S.get().sound !== false);
   }
 
-  // Called on the first tap / click / key press, which is when the browser allows audio to start.
+  // iOS can leave the audio context "interrupted" (not "suspended") or stuck after the app has been in the background,
+  // for example after opening the tip link. Resuming it does not always work, so in that case start a fresh one.
+  function fresh() {
+    const old = ctx;
+    ctx = null;
+    master = null;
+    try { if (old && old.state !== 'closed') old.close().catch(() => {}); } catch (e) { /* already gone */ }
+    return context();
+  }
+
+  // Called on every tap / click / key press, which is when the browser allows audio to start (or restart).
   Sound.unlock = function () {
-    const c = context();
-    if (c && c.state === 'suspended') c.resume().catch(() => {});
+    let c = context();
+    if (!c || c.state === 'running') return;
+    if (c.state === 'interrupted' || c.state === 'closed') c = fresh();
+    if (c && c.state !== 'running') c.resume().catch(() => {});
   };
 
   Sound.play = function (name) {
@@ -132,10 +144,10 @@
     const c = context();
     if (!c) return;
     if (c.state !== 'running') {
-      c.resume().catch(() => {}); // still locked: skip this one rather than let sounds pile up and fire together
+      c.resume().catch(() => {}); // not running (still locked, or stopped in the background): skip this one rather than let sounds pile up and fire together
       return;
     }
-    start(name, c, master, c.currentTime + 0.005);
+    start(name, c, master, c.currentTime);
   };
 
   // Render one effect to samples (used by the tests and to make preview files). Resolves to a Float32Array.

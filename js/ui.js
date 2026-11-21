@@ -290,7 +290,7 @@
 
   // zone: 0, 1, 2 or null (no zone this round)
   UI.setZone = function (seat, zone, animate) {
-    if (animate && zone !== null && window.ClubsSound) window.ClubsSound.play('phip'); // a zone is issued
+    if (animate && window.ClubsSound) window.ClubsSound.play('phip'); // a zone is issued ("no zone" gets the same tick)
     els.cards[seat].dataset.zone = zone === null ? 'none' : String(zone);
     UI.setScore(seat, 'zone', R.zoneLabel(zone), animate);
     refreshZoneState(seat);
