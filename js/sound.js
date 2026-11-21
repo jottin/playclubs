@@ -142,11 +142,23 @@
     } catch (e) { /* not fatal */ }
   }
 
+  // After the player has been away, the audio output can be dead even though the context still reports "running".
+  // Opening the tip link in the home-screen app does exactly this: it shows the page in a viewer on top of the game,
+  // and the game never sees a visibility change. So a link click, or coming back to the window, marks the context as
+  // stale, and the next tap replaces it with a fresh one.
+  let stale = false;
+  function markStale() { stale = true; }
+
   // Called on every tap / click / key press, which is when the browser allows audio to start (or restart).
   Sound.unlock = function () {
     let c = context();
-    if (!c || c.state === 'running') return;
-    if (c.state === 'interrupted' || c.state === 'closed') c = fresh();
+    if (!c) return;
+    if (stale) {
+      stale = false;
+      c = fresh();
+    } else if (c.state === 'interrupted' || c.state === 'closed') {
+      c = fresh();
+    }
     if (!c || c.state === 'running') return;
     primer(c);
     c.resume().catch(() => {});
@@ -181,5 +193,13 @@
   };
 
   ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, Sound.unlock, { capture: true, passive: true }));
+  // Links that open another page (the tip button), and returning to this window, both mark the audio as stale.
+  document.addEventListener('click', (e) => {
+    const a = e.target && e.target.closest ? e.target.closest('a[href^="http"]') : null;
+    if (a) markStale();
+  }, { capture: true, passive: true });
+  root.addEventListener('focus', markStale);
+  root.addEventListener('pageshow', markStale);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') markStale(); });
   root.ClubsSound = Sound;
 })(window);
