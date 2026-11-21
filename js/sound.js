@@ -90,6 +90,7 @@
     },
   };
   Sound.recipes = RECIPES;
+  Sound.CATCH_UP_MS = 350; // a sound that was waiting for audio to wake up is still played if that takes less than this
   Sound.LEVEL = 0.9; // overall loudness, 0 to 1
   Sound.TRIM = { phip: 1.6, slide: 1.1, shhhuuu: 1.1 }; // balances the three effects against each other
 
@@ -131,12 +132,24 @@
     return context();
   }
 
+  // Play a one-sample silent buffer. On iOS this is what really "unlocks" audio, and it has to happen inside a tap.
+  function primer(c) {
+    try {
+      const src = c.createBufferSource();
+      src.buffer = c.createBuffer(1, 1, c.sampleRate);
+      src.connect(c.destination);
+      src.start(0);
+    } catch (e) { /* not fatal */ }
+  }
+
   // Called on every tap / click / key press, which is when the browser allows audio to start (or restart).
   Sound.unlock = function () {
     let c = context();
     if (!c || c.state === 'running') return;
     if (c.state === 'interrupted' || c.state === 'closed') c = fresh();
-    if (c && c.state !== 'running') c.resume().catch(() => {});
+    if (!c || c.state === 'running') return;
+    primer(c);
+    c.resume().catch(() => {});
   };
 
   Sound.play = function (name) {
@@ -144,7 +157,12 @@
     const c = context();
     if (!c) return;
     if (c.state !== 'running') {
-      c.resume().catch(() => {}); // not running (still locked, or stopped in the background): skip this one rather than let sounds pile up and fire together
+      // Not running yet (still locked, or just waking up). Starting audio takes a moment, so if it comes up very soon
+      // play this one late rather than lose it; anything older than that is dropped so sounds never pile up and fire together.
+      const asked = Date.now();
+      c.resume().then(() => {
+        if (c.state === 'running' && Date.now() - asked < Sound.CATCH_UP_MS && wanted()) start(name, c, master, c.currentTime);
+      }).catch(() => {});
       return;
     }
     start(name, c, master, c.currentTime);
@@ -162,6 +180,6 @@
     return c.startRendering().then((buf) => buf.getChannelData(0));
   };
 
-  ['pointerdown', 'keydown', 'touchstart'].forEach((ev) => document.addEventListener(ev, Sound.unlock, { capture: true, passive: true }));
+  ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, Sound.unlock, { capture: true, passive: true }));
   root.ClubsSound = Sound;
 })(window);
